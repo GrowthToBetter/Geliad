@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid()) @map("user_id") @db.Char(36)
+  email         String    @unique
+  photo_profile String?
+  name          String
+  clasess       Class?
+  title         Title?
+  detail        Int?
+  absent        String?
+  Phone         String?
+  role          Role      @default(SISWA)
+  status        Status    @default(NOTGRADUATE)
+  gender        Gender?   @default(Male)
+  userAuth      UserAuth?
+  Sugestion     String?
+  ClassNumber   String?
+  File          fileWork[]
+}
+
+model fileWork{
+  id        String      @id @default(uuid()) @map("file_id") @db.Char(36)
+  filename  String
+  mimetype  String
+  size      Int
+  status    RequestStatus @default(PENDING)
+  userId    String 
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  path      String
+  createdAt DateTime @default(now())
+}
+
+enum Class {
+  X
+  XI
+  XII
+}
+
+enum Title {
+  RPL
+  PG
+  TKJ
+}
+
+model UserAuth {
+  id         String    @id @default(uuid()) @map("userauth_id") @db.Char(36)
+  password   String?
+  last_login DateTime?
+  userEmail  String    @unique
+  user       User      @relation(fields: [userEmail], references: [email], onDelete: Cascade)
+}
+
+
+enum Status {
+  NOTGRADUATE
+  GRADUATE
+}
+
+enum Role {
+  SISWA
+  GURU
+  ADMIN
+}
+
+enum Gender {
+  Male
+  Female
+}
+
+enum RequestStatus {
+  PENDING
+  VERIFIED
+  DENIED
+}
