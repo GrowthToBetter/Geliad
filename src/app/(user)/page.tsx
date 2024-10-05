@@ -109,7 +109,7 @@ export default function Home() {
         </ul>
       </div>
     </>) : (<>
-      <div className="bg-Primary flex flex-col justify-center items-center">
+      <div className="bg-Primary flex flex-col justify-center items-center relative">
         <div className="flex justify-center items-center h-screen bg-Primary">
           <div className="w-fit">
             <h1 className="text-3xl font-bold w-[400px]">
@@ -122,9 +122,7 @@ export default function Home() {
             </p>
           </div>
           <Image src={Gambar} alt="Gambar" width={520} height={400} />
-        </div>
-
-        <form className=" w-[1000px]">
+        <form className=" w-[1000px] absolute top-32">
           <label
             htmlFor="search"
             className="mb-2 text-sm font-medium text-gray-900 sr-only"
@@ -164,6 +162,8 @@ export default function Home() {
             </FormButton>
           </div>
         </form>
+        </div>
+
       </div>
     
     </>)}

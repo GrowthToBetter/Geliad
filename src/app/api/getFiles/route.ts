@@ -7,8 +7,9 @@ export async function GET(req: Request) {
   const userId = url.searchParams.get("userId");
 
   if (!userId) {
-    return new NextResponse(JSON.stringify({ error: "User ID is required" }), {
-      status: 400,
+    const dataFile=await findFiles({});
+    return new NextResponse(JSON.stringify({dataFile}), {
+      status: 200,
       headers: {
         "Content-Type": "application/json",
       },

@@ -5,10 +5,10 @@ export type userWithLastLogin = Prisma.UserGetPayload<{
 }>;
 
 export type userFullPayload = Prisma.UserGetPayload<{
-  include: {userAuth: true}
+  include: {userAuth: true, File: {include: {TaskValidator: true}}, taskValidator:{include:{user:true}}};
 }>;
 export type FileFullPayload = Prisma.fileWorkGetPayload<{
-  include: {user: true}
+  include: {user: {include: {userAuth: true}}, TaskValidator: true}
 }>;
 
 
