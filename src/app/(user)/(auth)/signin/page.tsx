@@ -31,7 +31,7 @@ export default function Signin() {
       setIsLoading(true);
       if (!userData.title || !userData.clasess) {
         toast.success("Berhasil Login!");
-        router.push("/pilihRole")
+        router.push("/AjukanKarya");
       } else if(userData.title && userData.clasess){
         toast.success("Berhasil Login!");
         router.push("/")
@@ -57,8 +57,8 @@ export default function Signin() {
           <div className="lg:w-1/2 w-full h-screen pt-24 px-4 lg:px-0">
           {/* LOGO */}
             <div className="max-w-lg mx-auto mt-2">
-              <h3 className="text-[35.4px] font-medium text-center text-black leading-none">Welcome to MoCo</h3>
-              <p className="text-[20px] font-medium text-black text-center opacity-70 lg:-mt-2">Moklet Competency</p>
+              <h3 className="text-[35.4px] font-medium text-center text-black leading-none">Welcome to GELIAD</h3>
+              <p className="text-[20px] font-medium text-black text-center opacity-70 lg:-mt-2">Be The best with Us</p>
 
               {loading ? (
                 <button className="focus:outline-none text-white bg-base flex justify-center items-center hover:bg-red-600 focus:ring focus:ring-red-400 font-medium rounded-lg text-sm px-5 py-3 me-2 mb-2 mt-6 w-full">
