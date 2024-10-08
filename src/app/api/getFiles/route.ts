@@ -1,25 +1,21 @@
-
-import { findFiles } from '@/utils/user.query';
+// pages/api/getFiles.js
+import { findFiles, getFileFromDatabase } from '@/utils/user.query';
 import { NextResponse } from 'next/server';
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
-  const userId = url.searchParams.get("userId");
-
-  if (!userId) {
-    const dataFile=await findFiles({});
-    return new NextResponse(JSON.stringify({dataFile}), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  }
+  const userId = url.searchParams.get("fileId");
 
   try {
-    const user = await findFiles({ userId: userId });
-    if (!user) {
-      return new NextResponse(JSON.stringify({ error: "User not found" }), {
+    let dataFile;
+    if (!userId) {
+      dataFile = await findFiles({});
+    } else {
+      dataFile = await getFileFromDatabase(userId);
+    }
+
+    if (!dataFile) {
+      return new NextResponse(JSON.stringify({ error: "No files found" }), {
         status: 404,
         headers: {
           "Content-Type": "application/json",
@@ -27,14 +23,14 @@ export async function GET(req: Request) {
       });
     }
 
-    return new NextResponse(JSON.stringify({ user }), {
+    return new NextResponse(JSON.stringify({ dataFile }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
       },
     });
   } catch (error) {
-    console.error("Error fetching user data:", error);
+    console.error("Error fetching files:", error);
     return new NextResponse(JSON.stringify({ error: "Internal Server Error" }), {
       status: 500,
       headers: {

@@ -1,6 +1,6 @@
 "use server";
 
-import { Class,  Gender, Role, Status, Title } from "@prisma/client";
+import { Class,  Gender, RequestStatus, Role, Status, Title } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { createUser, updateUser } from "../user.query";
 import { revalidatePath } from "next/cache";
@@ -97,6 +97,25 @@ export const updateIdentity = async (id: string, data: FormData) => {
     throw new Error((error as Error).message);
   }
 };
+
+export const updateStatus = async (id: string, data: FormData) => {
+  try {
+    const status = data.get("status") as RequestStatus;
+    const update= await prisma.fileWork.update({
+      where: { id: id },
+      data: {
+        status
+      },
+    })
+    if(!update){
+      throw new Error("eror");
+    }
+    revalidatePath("/AjukanKarya");
+    return update;
+  } catch (error) {
+    throw new Error((error as Error).message);
+  }
+}
 
 export const updateRole = async (id: string, data: FormData) => {
   try {

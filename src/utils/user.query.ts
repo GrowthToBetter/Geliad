@@ -17,6 +17,10 @@ export const findUser = async (filter: Prisma.UserWhereInput) => {
 };
 
 
+export const getFileFromDatabase = async (fileId: string) => {
+  return await prisma.fileWork.findUnique({ where: { id: fileId } });
+}
+
 export const findUserAuth = async (email: string) => {
   return await prisma.userAuth.findUnique({ where: { userEmail: email } });
 };
