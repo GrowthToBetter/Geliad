@@ -26,13 +26,12 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-certain-sky-437602-s4-726839effa99.json
+certain-sky-437602-s4-697c9a02fb97.json
 # local env files
 .env*.local
 *.env
 # vercel
 .vercel
-key.json
 # typescript
 *.tsbuildinfo
 next-env.d.ts
