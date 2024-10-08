@@ -32,7 +32,7 @@ certain-sky-437602-s4-726839effa99.json
 *.env
 # vercel
 .vercel
-
+key.json
 # typescript
 *.tsbuildinfo
 next-env.d.ts
