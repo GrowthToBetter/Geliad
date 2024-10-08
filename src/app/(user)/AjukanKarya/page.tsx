@@ -25,9 +25,6 @@ const UploadPage: React.FC = () => {
     {}
   );
   const [file, setFile] = useState<FileFullPayload[]>([]);
-  const { data, error } = useSWR(`/api/getFiles`, fetcher, {
-    refreshInterval: 1000,
-  });
   const router = useRouter();
   useEffect(() => {
     const fetchUserData = async () => {
@@ -45,9 +42,12 @@ const UploadPage: React.FC = () => {
         }
       }
     };
-
+    
     fetchUserData();
   }, [session]);
+  const { data, error } = useSWR(`/api/getFiles${userData?.role==="SISWA" ? `?fileId=${userData?.id}`: ""}`, fetcher, {
+    refreshInterval: 1000,
+  });
   useEffect(() => {
     if (data) {
       const { dataFile } = data;
@@ -120,6 +120,8 @@ const UploadPage: React.FC = () => {
                         Lihat File
                       </button>
                       <div className="relative">
+                        {userData?.role==="GURU" ? (
+                          <>
                         <FormButton
                           type="button"
                           variant="base"
@@ -135,28 +137,25 @@ const UploadPage: React.FC = () => {
                             className="rounded-full"
                           />
                         </FormButton>
+                          
+                          </>
+                        ):(<></>)}
                         {openProfiles[file.id] && (
                           <div className="w-full p-2 max-w-56 bg-Secondary mt-1 border border-slate-300 rounded-lg absolute right-0 top-full z-10">
-                            <LinkButton
+                              <div>
+                              <LinkButton
                               variant="base"
                               href={`/profile/${file.user?.id}`}
                               className="w-full"
                             >
                               <p className="mx-auto text-sm">Visit</p>
                             </LinkButton>
-                            {userData?.role === "GURU" ? (
                               <FormButton variant="base" onClick={()=>{handleClick(file.id)}} className="w-full">
                                 <p className="mx-auto text-sm text-black border-t-2 border-Primary">
                                   Verified
                                 </p>
                               </FormButton>
-                            ) : (
-                              <FormButton variant="base" className="w-full">
-                                <p className="mx-auto text-sm text-black border-t-2 border-Primary">
-                                  Comment
-                                </p>
-                              </FormButton>
-                            )}
+                              </div>
                           </div>
                         )}
                       </div>

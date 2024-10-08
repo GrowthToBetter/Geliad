@@ -1,5 +1,5 @@
 // pages/api/getFiles.js
-import { findFiles, getFileFromDatabase } from '@/utils/user.query';
+import { findFiles } from '@/utils/user.query';
 import { NextResponse } from 'next/server';
 
 export async function GET(req: Request) {
@@ -11,7 +11,7 @@ export async function GET(req: Request) {
     if (!userId) {
       dataFile = await findFiles({});
     } else {
-      dataFile = await getFileFromDatabase(userId);
+      dataFile = await findFiles({userId});
     }
 
     if (!dataFile) {
