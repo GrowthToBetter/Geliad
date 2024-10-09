@@ -95,7 +95,7 @@ export default function UploadPage() {
   const filteredFile =
     userData?.role === "GURU"
       ? file.filter((file) => file.userRole === "SISWA")
-      : file.filter((file) => file.userRole === "GURU");
+      : userData?.role==="VALIDATOR" ? file.filter((file) => file.userRole === "GURU") : file;
   if (userData) {
     if (status === "authenticated" && !userData.title)
       return router.push("/pilihRole");
@@ -131,7 +131,7 @@ export default function UploadPage() {
   return (
     <div className="min-h-screen-minus-10">
       <>
-        {userData?.role === "GURU" || userData?.role === "VALIDATOR" ? (
+        {userData?.role === "GURU" || userData?.role === "VALIDATOR" || userData?.role==="ADMIN" ? (
           <>
             <ul className="flex pt-32 justify-evenly font-semibold   ">
               <li>

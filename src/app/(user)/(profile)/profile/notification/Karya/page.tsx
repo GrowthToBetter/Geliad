@@ -87,7 +87,7 @@ export default function UploadPage() {
   return (
     <div className="min-h-screen-minus-10">
       <>
-        {userData?.role ==="GURU" || userData?.role==="VALIDATOR" ? <>
+        {userData?.role ==="GURU" || userData?.role==="VALIDATOR" || userData?.role==="ADMIN" ? <>
           <ul className="flex pt-32 justify-evenly font-semibold   ">
             <li>
               <Link href={"/profile/notification/Karya"} className={`flex m-10 p-5 rounded-md hover:border-2 hover:border-[#F5F8FA] ${pathName === "/notification/Karya" ? "bg-[#F5F8FA]" : ""}`}>

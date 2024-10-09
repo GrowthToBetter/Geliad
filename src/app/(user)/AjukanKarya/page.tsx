@@ -45,7 +45,7 @@ export default function UploadPage(){
     
     fetchUserData();
   }, [session]);
-  const { data, error } = useSWR(`/api/getFiles${userData?.role==="SISWA" ? `?fileId=${userData?.id}`: ""}`, fetcher, {
+  const { data, error } = useSWR(`/api/getFiles?fileId=${userData?.id}`, fetcher, {
     refreshInterval: 1000,
   });
   useEffect(() => {
