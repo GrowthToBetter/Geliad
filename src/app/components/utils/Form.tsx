@@ -9,7 +9,7 @@ interface InputProps {
   name?: string;
   className?: string;
   value?: string;
-  handleChange?: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | unknown>) => void;
+  handleChange?: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement >) => void;
   disabled?: boolean;
   readOnly?: boolean;
   defaultValue?: string;

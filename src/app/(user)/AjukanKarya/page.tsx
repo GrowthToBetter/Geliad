@@ -17,7 +17,7 @@ import { RequestStatus } from "@prisma/client";
 import { updateStatus } from "@/utils/server-action/userGetServerSession";
 import toast from "react-hot-toast";
 
-const UploadPage: React.FC = () => {
+export default function UploadPage(){
   const [modal, setModal] = useState(false);
   const { data: session, status } = useSession();
   const [userData, setUserData] = useState<userFullPayload | null>(null);
@@ -71,6 +71,10 @@ const UploadPage: React.FC = () => {
       throw new Error((error as Error).message);
     }
   }
+  if(userData){
+    if(status==="authenticated" && !userData.title) return router.push("/pilihRole");
+  }
+  if(status=="loading" || !userData) return <>Loading...</>;
   return (
     <div className="pt-44">
       <>
@@ -133,4 +137,3 @@ const UploadPage: React.FC = () => {
   );
 };
 
-export default UploadPage;

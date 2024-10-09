@@ -8,8 +8,8 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(uuid()) @map("user_id") @db.Char(36)
-  email         String    @unique
+  id            String     @id @default(uuid()) @map("user_id") @db.Char(36)
+  email         String     @unique
   photo_profile String?
   name          String
   clasess       Class?
@@ -17,31 +17,42 @@ model User {
   detail        Int?
   absent        String?
   Phone         String?
-  role          Role      @default(SISWA)
-  status        Status    @default(NOTGRADUATE)
-  gender        Gender?   @default(Male)
+  role          Role       @default(SISWA)
+  status        Status     @default(NOTGRADUATE)
+  gender        Gender?    @default(Male)
   userAuth      UserAuth?
   taskValidator fileWork[] @relation("task_validator")
   Sugestion     String?
   ClassNumber   String?
   validatorId   String?
   File          fileWork[] @relation("file_id")
-  validator       User?     @relation("teacherToStudent", fields: [validatorId], references: [id])
-  user       User[]    @relation("teacherToStudent")
+  validator     User?      @relation("teacherToStudent", fields: [validatorId], references: [id])
+  user          User[]     @relation("teacherToStudent")
+  comment       comment[]  @relation("comment")
 }
 
-model fileWork{
-  id        String      @id @default(uuid()) @map("file_id") @db.Char(36)
-  filename  String
-  mimetype  String
-  size      Int
-  status    RequestStatus @default(PENDING)
-  userId    String 
-  TaskValidator   User[]    @relation("task_validator")
-  user      User?    @relation("file_id", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  path      String
-  genre     String?
-  createdAt DateTime @default(now())
+model fileWork {
+  id            String        @id @default(uuid()) @map("file_id") @db.Char(36)
+  filename      String
+  mimetype      String
+  size          Int
+  status        RequestStatus @default(PENDING)
+  userId        String
+  TaskValidator User[]        @relation("task_validator")
+  user          User?         @relation("file_id", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  path          String
+  genre         String?
+  userRole      Role          @default(SISWA)
+  createdAt     DateTime      @default(now())
+  comment       comment[]     @relation("comment_file")
+}
+
+model comment {
+  id     String     @id @default(uuid()) @map("comment_id") @db.Char(36)
+  Text   String?
+  userId String?
+  user   User?      @relation("comment", fields: [userId], references: [id])
+  file   fileWork[] @relation("comment_file")
 }
 
 enum Class {
@@ -64,7 +75,6 @@ model UserAuth {
   user       User      @relation(fields: [userEmail], references: [email], onDelete: Cascade)
 }
 
-
 enum Status {
   NOTGRADUATE
   GRADUATE
@@ -74,6 +84,7 @@ enum Role {
   SISWA
   GURU
   ADMIN
+  VALIDATOR
 }
 
 enum Gender {

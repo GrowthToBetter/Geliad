@@ -1,12 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import { userFullPayload } from "@/utils/relationsip";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Page(props: { params: { slug: string } }) {
   const [userData, setUserData] = useState<userFullPayload | null>(null);
   const [modal, setModal] = useState(false);
+  const { data: session, status } = useSession();
+  const router = useRouter();
   useEffect(() => {
     const fetchUserData = async () => {
       if (props.params.slug) {
@@ -29,6 +33,9 @@ export default function Page(props: { params: { slug: string } }) {
   const handleModal = () => {
     setModal(!modal);
   };
+  if(userData){
+    if(status==="authenticated" && !userData.title) return router.push("/pilihRole");
+  }
   return (
     <div className="bg-slate-100 p-5 md:p-10 lg:p-15 xl:p-20">
       <div className="mt-24 bg-white rounded-3xl p-10 md:p-15 lg:p-20 xl:p-24 relative overflow-hidden">

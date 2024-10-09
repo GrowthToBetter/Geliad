@@ -4,6 +4,8 @@ import { google } from "googleapis";
 import { drive_v3 } from "googleapis/build/src/apis/drive/v3";
 import { Readable } from "stream";
 import prisma from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
+
 
 const credentials = {
   type: process.env.GOOGLE_ACCOUNT_TYPE,
@@ -34,7 +36,7 @@ export async function POST(req: NextRequest) {
     const file = formData.get("file") as File | null;
     const url = new URL(req.url);
     const userId = url.searchParams.get("userId");
-
+    
     console.log("Received file:", file?.name, "Size:", file?.size);
     console.log("User ID:", userId);
 
@@ -107,11 +109,12 @@ export async function POST(req: NextRequest) {
         path: driveResponse.data.webViewLink || "",
         userId: userId,
         status: "PENDING",
+        userRole: user.role,
       },
     });
-
     console.log("File record created in database:", uploadedFile.id);
-
+    
+    revalidatePath("/AjukanKarya");
     return NextResponse.json(uploadedFile);
   } catch (error) {
     console.error("Error handling upload:", error);

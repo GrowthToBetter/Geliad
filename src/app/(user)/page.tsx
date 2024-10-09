@@ -52,6 +52,9 @@ export default function Home() {
     }
   }, [data]);
   const filteredFiles = files.filter((file) => file.status === "VERIFIED");
+  if(userData){
+    if(status==="authenticated" && !userData.title) return router.push("/pilihRole");
+  }
   return (
     <>
       <div className="bg-Primary flex flex-col justify-center items-center relative">

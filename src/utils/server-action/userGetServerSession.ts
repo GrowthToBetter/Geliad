@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use server";
 
 import { Class,  Gender, RequestStatus, Role, Status, Title } from "@prisma/client";
@@ -85,18 +86,38 @@ export const updateIdentity = async (id: string, data: FormData) => {
     if (!update) {
       throw new Error("eror");
     }
-    revalidatePath("/admin/studentData");
-    revalidatePath("/checklist");
+    revalidatePath("/pilihRole");
+    revalidatePath("/");
     revalidatePath("/profile");
-    revalidatePath("/signin");
-    revalidatePath("/api/teacher");
-    revalidatePath("/api/data");
-    revalidatePath("/api/siswa");
+    revalidatePath("/notification");
+    revalidatePath("/AjukanKarya");
     return update;
   } catch (error) {
     throw new Error((error as Error).message);
   }
 };
+
+export const commentFile=async (comment: string, file:{connect:{id:string}}, user:{connect:{id:string}}) => {
+  try {
+    const createComment = await prisma.comment.create({
+      data: {
+        file,
+        user:{
+          connect:{
+            id:user.connect.id
+          }
+        },
+        Text: comment,
+      }
+    })
+    if(!createComment){
+      throw new Error("eror");
+    }
+    return createComment;
+  } catch (error) {
+    throw new Error((error as Error).message);
+  }
+}
 
 export const updateStatus = async (id: string, data: FormData) => {
   try {

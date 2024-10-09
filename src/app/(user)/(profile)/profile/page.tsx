@@ -70,6 +70,9 @@ export default function Profile() {
     }
   };
   if (status === "unauthenticated") return router.push("/signin");
+  if(userData){
+    if(status==="authenticated" && !userData.title) return router.push("/pilihRole");
+  }
   if (status === "loading") return "Loading...";
   return (
     <div className="bg-slate-100 p-0 sm:p-5 md:p-10 lg:p-15 xl:p-20">
@@ -98,14 +101,12 @@ export default function Profile() {
               <FormButton variant="base" onClick={handleModal}>
                 Edit Profile
               </FormButton>
-              {userData?.role==="GURU"? 
               <FormButton
                 variant="base"
-                onClick={() => router.push("/profile/notification")}
+                onClick={() => router.push("/profile/notification/Karya")}
               >
                 Notification
-              </FormButton>:<></>
-            }
+              </FormButton>
             </div>
           </div>
           <div className="h-2"></div>

@@ -32,7 +32,7 @@ export default function Signin() {
       if (!userData.title || !userData.clasess) {
         toast.success("Berhasil Login!");
         router.push("/AjukanKarya");
-      } else if(userData.title && userData.clasess){
+      } else if(userData.title){
         toast.success("Berhasil Login!");
         router.push("/")
       }else {

@@ -5,14 +5,14 @@ import prisma from "./../lib/prisma";
 export const findAllUsers = async (filter?: Prisma.UserWhereInput) => {
   return await prisma.user.findMany({
     where: filter,
-    include: { userAuth: { select: { last_login: true } },  File: {include: {TaskValidator: true}}, taskValidator:{include:{user:{include:{userAuth:true}}} },},
+    include: { userAuth: { select: { last_login: true } },  File: {include: {TaskValidator: true, comment:true}}, taskValidator:{include:{user:{include:{userAuth:true}}} },},
   });
 };
 
 export const findUser = async (filter: Prisma.UserWhereInput) => {
   return await prisma.user.findFirst({
     where: filter,
-    include: { userAuth: { select: { last_login: true } }, File: {include: {TaskValidator: true}}, taskValidator:{include:{user:{include:{userAuth:true}}}}},
+    include: { userAuth: { select: { last_login: true } }, File: {include: {TaskValidator: true, comment:true}}, taskValidator:{include:{user:{include:{userAuth:true}}}}},
   });
 };
 
@@ -34,8 +34,16 @@ export const createUser = async (data: Prisma.UserUncheckedCreateInput) => {
 export const findFiles=async(filter: Prisma.fileWorkWhereInput) => {
   return await prisma.fileWork.findMany({
     where: filter,
-    include: { user:{include:{userAuth:true}}, TaskValidator:true},
+    include: { user:{include:{userAuth:true}}, TaskValidator:true, comment:{include:{user:true}}},
   });
+}
+
+export const updateFile=async(where: Prisma.fileWorkWhereUniqueInput, update: Prisma.fileWorkUncheckedUpdateInput) => {
+  return await prisma.fileWork.update({ where, data: update });
+}
+
+export const createComment = async (data: Prisma.commentUncheckedCreateInput) => {
+  return await prisma.comment.create({ data });
 }
 
 export const createFile = async (data: Prisma.fileWorkUncheckedCreateInput) => {
