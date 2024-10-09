@@ -98,12 +98,14 @@ export default function Profile() {
               <FormButton variant="base" onClick={handleModal}>
                 Edit Profile
               </FormButton>
+              {userData?.role==="GURU"? 
               <FormButton
                 variant="base"
                 onClick={() => router.push("/profile/notification")}
               >
                 Notification
-              </FormButton>
+              </FormButton>:<></>
+            }
             </div>
           </div>
           <div className="h-2"></div>
