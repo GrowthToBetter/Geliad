@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import "./globals.css";
+import "../globals.css";
 import AuthProviders from "@/lib/AuthProvider";
 import Navbar from "../components/utils/Navbar";
 import ProgressBarProvider from "@/lib/ProgressBar";
