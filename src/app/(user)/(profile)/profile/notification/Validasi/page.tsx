@@ -78,6 +78,11 @@ export default function UploadPage() {
   const handleAddTaskField = () => {
     setTaskFields([...taskFields, { task: "", details: [""] }]);
   };
+  const handleMinTaskField = () => {
+    if (taskFields.length > 1) {
+      setTaskFields(taskFields.slice(0, -1));
+    }
+  };
   const handleModal = () => {
     setModal(!modal);
   };
@@ -272,7 +277,7 @@ export default function UploadPage() {
                                       <div className="flex items-center justify-between">
                                         <TextField
                                           type="input"
-                                          label={`ADD TASK ${taskIndex + 1}`}
+                                          label={`ADD Comment ${taskIndex + 1}`}
                                           name={`Task-${taskIndex}`}
                                           value={field.task}
                                           handleChange={(e) =>
@@ -284,6 +289,7 @@ export default function UploadPage() {
                                           className="w-full m-3 text-black"
                                         />
                                       </div>
+                                      <div className="flex justify-start">
                                       <FormButton
                                         type="button"
                                         onClick={() => handleAddTaskField()}
@@ -292,6 +298,15 @@ export default function UploadPage() {
                                       >
                                         +
                                       </FormButton>
+                                      <FormButton
+                                        type="button"
+                                        onClick={() => handleMinTaskField()}
+                                        className="rounded-full flex justify-center items-center text-center"
+                                        variant="base"
+                                      >
+                                        -
+                                      </FormButton>
+                                      </div>
                                     </div>
                                   ))}
                                   <FormButton type="submit" variant="base">

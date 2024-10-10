@@ -101,12 +101,6 @@ export default function Profile() {
               <FormButton variant="base" onClick={handleModal}>
                 Edit Profile
               </FormButton>
-              <FormButton
-                variant="base"
-                onClick={() => router.push("/profile/notification/Karya")}
-              >
-                Notification
-              </FormButton>
             </div>
           </div>
           <div className="h-2"></div>

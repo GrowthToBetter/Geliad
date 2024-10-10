@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-expressions */ 
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 "use client";
 import Link from "next/link";
 import Image from "next/image";
@@ -30,8 +30,7 @@ export default function Navbar() {
     <main>
       <nav className="bg-Primary fixed w-full z-20 top-0 start-0 border-b border-gray-200">
         <div className="w-screen flex flex-wrap items-center justify-between mx-auto p-4 lg:px-20">
-          <div className="w-fit h-fit flex-col justify-center items-center space-x-72">
-          </div>
+          <div className="w-fit h-fit flex-col justify-center items-center space-x-72"></div>
           <Link
             href="#"
             className="flex items-center space-x-3 rtl:space-x-reverse"
@@ -39,6 +38,12 @@ export default function Navbar() {
             <h1 className="tracking-[3rem] text-2xl font-bold">GELIAD</h1>
           </Link>
           <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+            <FormButton
+              variant="base"
+              onClick={() => router.push("/profile/notification/Karya")}
+            >
+              Notification
+            </FormButton>
             <div>
               {status === "unauthenticated" ? (
                 <button
