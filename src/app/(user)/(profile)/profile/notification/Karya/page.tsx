@@ -154,47 +154,6 @@ export default function UploadPage() {
                         Lihat File
                       </button>
                       <div className="relative">
-                        <>
-                          <FormButton
-                            type="button"
-                            variant="base"
-                            onClick={() => handleProf(file.id)}
-                            withArrow
-                            className="flex justify-center gap-x-2 py-2 px-4"
-                          >
-                            <Image
-                              src={file.user?.photo_profile as string}
-                              alt="user image"
-                              width={36}
-                              height={36}
-                              className="rounded-full"
-                            />
-                          </FormButton>
-                        </>
-                        {openProfiles[file.id] && (
-                          <div className="w-full p-2 max-w-56 bg-Secondary mt-1 border border-slate-300 rounded-lg absolute right-0 top-full z-10">
-                            <div>
-                              <LinkButton
-                                variant="base"
-                                href={`/profile/${file.user?.id}`}
-                                className="w-full"
-                              >
-                                <p className="mx-auto text-sm">Visit</p>
-                              </LinkButton>
-                              <FormButton
-                                variant="base"
-                                onClick={() => {
-                                  handleClick(file.id);
-                                }}
-                                className="w-full"
-                              >
-                                <p className="mx-auto text-sm text-black border-t-2 border-Primary">
-                                  Verified
-                                </p>
-                              </FormButton>
-                            </div>
-                          </div>
-                        )}
                       </div>
                     </div>
                   ))}
