@@ -26,7 +26,6 @@
     "prisma": "^5.20.0",
     "react": "^18",
     "react-data-table-component": "^7.6.2",
-    "react-docx": "^1.0.1",
     "react-dom": "^18",
     "react-dropzone": "^14.2.9",
     "react-hot-toast": "^2.4.1",
