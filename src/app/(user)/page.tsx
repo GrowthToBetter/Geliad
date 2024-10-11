@@ -142,6 +142,7 @@ export default function Home() {
               bgImage="https://www.shutterstock.com/image-vector/none-icon-thin-linear-outline-260nw-2139308813.jpg"
               nama={file.filename}
               key={i}
+              file={file}
             />
           ))}
         </div>

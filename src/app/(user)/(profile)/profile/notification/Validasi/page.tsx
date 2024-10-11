@@ -25,6 +25,9 @@ export default function UploadPage() {
   const [openProfiles, setOpenProfiles] = useState<{ [key: string]: boolean }>(
     {}
   );
+  const [openFile, setOpenFile] = useState<{ [key: string]: boolean }>(
+    {}
+  );
   const [modal, setModal] = useState(false);
   const pathName = usePathname();
   const [file, setFile] = useState<FileFullPayload[]>([]);
@@ -66,6 +69,12 @@ export default function UploadPage() {
   }, [data]);
   const handleProf = (id: string) => {
     setOpenProfiles((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+  const handlefile = (id: string) => {
+    setOpenFile((prev) => ({
       ...prev,
       [id]: !prev[id],
     }));
@@ -198,11 +207,36 @@ export default function UploadPage() {
                         </span>
                       </Link>
                       <button
-                        onClick={() => router.push(file.path)}
+                        onClick={() =>file.mimetype.includes("msword") || file.mimetype.includes("application/vnd.openxmlformats-officedocument.wordprocessingml.document") ? handlefile(file.id) : router.push(file.path)}
                         className="ml-4 text-blue-500 hover:underline"
                       >
                         Lihat File
+                        
                       </button>
+                      <>
+                        {openFile[file.id] && (
+                          <ModalProfile
+                           title={file.filename}
+                            onClose={() =>
+                              setOpenFile({
+                                ...openFile,
+                                [file.id]: false,
+                              })
+                            }
+                            className="h-screen"
+                          >
+                            <iframe
+                              className="w-full h-full"
+                              src={`${file.path}&output=embed`}
+                              frameBorder="9"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              contentEditable
+                              sandbox="allow-scripts allow-modals allow-popups allow-presentation"
+                              allowFullScreen
+                            ></iframe>
+                          </ModalProfile>
+                        )}
+                      </>
                       <div className="relative">
                         <>
                           <FormButton

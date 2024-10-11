@@ -142,7 +142,7 @@ export default function UploadPage(){
                               frameBorder="9"
                               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                               contentEditable
-                              sandbox="allow-scripts"
+                              sandbox="allow-scripts allow-modals allow-popups allow-presentation"
                               allowFullScreen
                             ></iframe>
                           </ModalProfile>

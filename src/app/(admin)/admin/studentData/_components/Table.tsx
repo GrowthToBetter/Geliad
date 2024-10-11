@@ -36,7 +36,7 @@ export default function Table({ studentData }: { studentData: Prisma.UserGetPayl
       name: "Action",
       cell: (row) => (
         <div className="flex gap-x-3">
-          <button onClick={() => EditUser(row)} title="Edit" className="p-2 bg-blue-500 text-white rounded-lg hover:scale-110 active:scale-105 duration-150">
+          <button onClick={() => EditUser(row)} title="Edit" className="p-2 bg-blue-900 text-white rounded-lg hover:scale-110 active:scale-105 duration-150">
             edit
           </button>
           <button onClick={() => DeleteUserById(row.id)} title="Delete" className="p-2.5 bg-red-500 text-white rounded-md hover:scale-110 active:scale-105 duration-150">
