@@ -35,7 +35,11 @@ export default function Navbar() {
             href="#"
             className="flex items-center space-x-3 rtl:space-x-reverse"
           >
-            <h1 className="tracking-[3rem] text-2xl font-bold">GELIAD</h1>
+            <div>
+            <h1 className="tracking-[3rem] text-2xl font-bold">GELIAD
+            <p className="text-center text-sm font-normal tracking-widest">Dari Tugas Jadi Karya</p>
+            </h1>
+            </div>
           </Link>
           <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
             <FormButton
