@@ -60,17 +60,17 @@ export default function UploadPage(){
       [id]: !prev[id],
     }));
   };
-  const handleClick= async (id:string)=>{
-    try {
-      const loading=toast.loading("Loading...");
-      const formData = new FormData();
-      formData.set("status", "VERIFIED" as RequestStatus);
-      await updateStatus(id, formData)
-      toast.success("Success", {id:loading});
-    } catch (error) {
-      throw new Error((error as Error).message);
-    }
-  }
+  // const handleClick= async (id:string)=>{
+  //   try {
+  //     const loading=toast.loading("Loading...");
+  //     const formData = new FormData();
+  //     formData.set("status", "VERIFIED" as RequestStatus);
+  //     await updateStatus(id, formData)
+  //     toast.success("Success", {id:loading});
+  //   } catch (error) {
+  //     throw new Error((error as Error).message);
+  //   }
+  // }
   if(userData){
     if(status==="authenticated" && !userData.title) return router.push("/pilihRole");
   }
@@ -118,11 +118,36 @@ export default function UploadPage(){
                       <span className={`${file.status==="PENDING"?"text-yellow-500":file.status==="DENIED"?"text-red-500":"text-green-500"}`}>{file.status}</span>
                       </Link>
                       <button
-                        onClick={() => router.push(file.path)}
+                        onClick={() =>file.mimetype.includes("msword") || file.mimetype.includes("application/vnd.openxmlformats-officedocument.wordprocessingml.document") ? handleProf(file.id) : router.push(file.path)}
                         className="ml-4 text-blue-500 hover:underline"
                       >
                         Lihat File
+                        
                       </button>
+                      <>
+                        {openProfiles[file.id] && (
+                          <ModalProfile
+                            title={file.filename}
+                            onClose={() =>
+                              setOpenProfiles({
+                                ...openProfiles,
+                                [file.id]: false,
+                              })
+                            }
+                            className="h-screen"
+                          >
+                            <iframe
+                              className="w-full h-full"
+                              src={`${file.path}&output=embed`}
+                              frameBorder="9"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              contentEditable
+                              sandbox="allow-scripts"
+                              allowFullScreen
+                            ></iframe>
+                          </ModalProfile>
+                        )}
+                      </>
                     </div>
                   ))}
                 </>

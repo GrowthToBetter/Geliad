@@ -10,3 +10,5 @@ declare global {
     }
   }
 }
+
+declare module 'react-docx';

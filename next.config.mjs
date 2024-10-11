@@ -25,6 +25,10 @@ const nextConfig = {
             value:
               "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
           },
+          {
+            key: "X-Frame-Options", // Add this line
+            value: "ALLOW-FROM https://docs.google.com", // Replace with your domain
+          },
         ],
       },
     ];
@@ -40,4 +44,3 @@ const nextConfig = {
   },
 };
 export default nextConfig;
-

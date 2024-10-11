@@ -22,6 +22,7 @@ export default function UploadPage() {
   const [openProfiles, setOpenProfiles] = useState<{ [key: string]: boolean }>(
     {}
   );
+  const [modal, setModal] = useState(false);
   const pathName = usePathname();
   const [file, setFile] = useState<FileFullPayload[]>([]);
   const router = useRouter();
@@ -87,21 +88,41 @@ export default function UploadPage() {
   return (
     <div className="min-h-screen-minus-10">
       <>
-        {userData?.role ==="GURU" || userData?.role==="VALIDATOR" || userData?.role==="ADMIN" ? <>
-          <ul className="flex pt-32 justify-evenly font-semibold   ">
-            <li>
-              <Link href={"/profile/notification/Karya"} className={`flex m-10 p-5 rounded-md hover:border-2 hover:border-[#F5F8FA] ${pathName === "/notification/Karya" ? "bg-[#F5F8FA]" : ""}`}>
-                Karya Yang Diajukan
-              </Link>
-            </li>
-            <li>
-              <Link href={"/profile/notification/Validasi"} className={`flex m-10 p-5 rounded-md hover:border-2 hover:border-[#F5F8FA] ${pathName === "/notification/Validasi" ? "bg-[#F5F8FA]" : ""}`}>
-                Validasi Karya
-              </Link>
-            </li>
-          </ul>
-        </> : <></>}
-        <div className={`flex justify-center items-center w-screen h-fit ${userData?.role=="SISWA" ? "pt-44" : ""}`}>
+        {userData?.role === "GURU" ||
+        userData?.role === "VALIDATOR" ||
+        userData?.role === "ADMIN" ? (
+          <>
+            <ul className="flex pt-32 justify-evenly font-semibold   ">
+              <li>
+                <Link
+                  href={"/profile/notification/Karya"}
+                  className={`flex m-10 p-5 rounded-md hover:border-2 hover:border-[#F5F8FA] ${
+                    pathName === "/notification/Karya" ? "bg-[#F5F8FA]" : ""
+                  }`}
+                >
+                  Karya Yang Diajukan
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={"/profile/notification/Validasi"}
+                  className={`flex m-10 p-5 rounded-md hover:border-2 hover:border-[#F5F8FA] ${
+                    pathName === "/notification/Validasi" ? "bg-[#F5F8FA]" : ""
+                  }`}
+                >
+                  Validasi Karya
+                </Link>
+              </li>
+            </ul>
+          </>
+        ) : (
+          <></>
+        )}
+        <div
+          className={`flex justify-center items-center w-screen h-fit ${
+            userData?.role == "SISWA" ? "pt-44" : ""
+          }`}
+        >
           <div className="shadow-inner container w-[1300px] border-2 border-gray-300 rounded-lg h-fit">
             <div className="shadow-inner container p-10 w-[1300px] border-2 border-gray-300 rounded-lg ">
               <h1 className="font-bold text-[40px] w-[400px]">
@@ -130,31 +151,68 @@ export default function UploadPage() {
                           {file.status}
                         </span>
                       </Link>
-                      {file.comment.length > 0 && (<>
-                        <FormButton variant="base" type="button" onClick={()=>{setComment(!comment)}}> Comment From Validator</FormButton>
-                      </>
+                      {file.comment.length > 0 && (
+                        <>
+                          <FormButton
+                            variant="base"
+                            type="button"
+                            onClick={() => {
+                              setComment(!comment);
+                            }}
+                          >
+                            {" "}
+                            Comment From Validator
+                          </FormButton>
+                        </>
                       )}
                       {comment && (
-                        <ModalProfile  onClose={() => { setComment(false); } } >
+                        <ModalProfile
+                          onClose={() => {
+                            setComment(false);
+                          }}
+                        >
                           {file.comment.map((comment) => (
-                             <div
-                             key={file.id}
-                             className="shadow-inner container flex justify-between p-10 w-full border-2 border-gray-300 rounded-lg relative mb-4"
-                           >
-                             <p>{comment.Text}</p>
-                             <p>{comment.user?.name}</p>
-                           </div>
+                            <div
+                              key={file.id}
+                              className="shadow-inner container flex justify-between p-10 w-full border-2 border-gray-300 rounded-lg relative mb-4"
+                            >
+                              <p>{comment.Text}</p>
+                              <p>{comment.user?.name}</p>
+                            </div>
                           ))}
                         </ModalProfile>
                       )}
                       <button
-                        onClick={() => router.push(file.path)}
+                        onClick={() =>file.mimetype.includes("msword") || file.mimetype.includes("application/vnd.openxmlformats-officedocument.wordprocessingml.document") ? handleProf(file.id) : router.push(file.path)}
                         className="ml-4 text-blue-500 hover:underline"
                       >
                         Lihat File
+                        
                       </button>
-                      <div className="relative">
-                      </div>
+                      <>
+                        {openProfiles[file.id] && (
+                          <ModalProfile
+                           title={file.filename}
+                            onClose={() =>
+                              setOpenProfiles({
+                                ...openProfiles,
+                                [file.id]: false,
+                              })
+                            }
+                            className="h-screen"
+                          >
+                            <iframe
+                              className="w-full h-full"
+                              src={`${file.path}&output=embed`}
+                              frameBorder="9"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              contentEditable
+                              sandbox="allow-scripts"
+                              allowFullScreen
+                            ></iframe>
+                          </ModalProfile>
+                        )}
+                      </>
                     </div>
                   ))}
                 </>

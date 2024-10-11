@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 
-export default function ModalProfile({ children, onClose, title }: { children: ReactNode; onClose: () => void; title?: string }) {
+export default function ModalProfile({ children, onClose, title, className }: { children: ReactNode; onClose: () => void; title?: string; className?: string }) {
   return (
     <div className="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-[9999] justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full bg-black/50">
       <div className="relative p-4 w-full max-w-4xl mt-10 mb-36 mx-auto max-h-full">
@@ -19,7 +19,7 @@ export default function ModalProfile({ children, onClose, title }: { children: R
               <span className="sr-only">Close modal</span>
             </button>
           </div>
-          <div className="px-8">{children}</div>
+          <div className={`px-8 ${className}`}>{children}</div>
         </div>
       </div>
     </div>
