@@ -138,6 +138,34 @@ export const updateStatus = async (id: string, data: FormData) => {
     throw new Error((error as Error).message);
   }
 }
+export const updateUploadFileByLink = async ( data: FormData) => {
+  try {
+    const name = data.get("name") as string;
+    const type = data.get("type") as string;
+    const size = 0;
+    const url = data.get("url") as string;
+    const userId = data.get("userId") as string;
+    const role = data.get("role") as Role;
+    const uploadedFile = await prisma.fileWork.create({
+      data: {
+        filename: name,
+        mimetype: type,
+        size: size,
+        path: url,
+        userId: userId,
+        status: "PENDING",
+        userRole: role,
+      },
+    });
+    if(!uploadedFile){
+      throw new Error("eror");
+    }
+    revalidatePath("/AjukanKarya");
+    return uploadedFile;
+  } catch (error) {
+    throw new Error((error as Error).message);
+  }
+}
 
 export const UpdateUserByIdInAdmin = async (id: string, data: FormData) => {
   try {

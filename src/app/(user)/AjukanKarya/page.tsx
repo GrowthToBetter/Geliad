@@ -4,7 +4,7 @@
 
 import { FormButton, LinkButton } from "@/app/components/utils/Button";
 import FileUploader from "./_components/UploaderFile/page";
-import { useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { FileFullPayload, userFullPayload } from "@/utils/relationsip";
 import { signOut, useSession } from "next-auth/react";
 import ModalProfile from "@/app/components/utils/Modal";
@@ -13,9 +13,10 @@ import { fetcher } from "@/utils/server-action/Fetcher";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { RequestStatus } from "@prisma/client";
-import { updateStatus } from "@/utils/server-action/userGetServerSession";
+import { RequestStatus, Role } from "@prisma/client";
+import { updateStatus, updateUploadFileByLink } from "@/utils/server-action/userGetServerSession";
 import toast from "react-hot-toast";
+import { TextField } from "@/app/components/utils/Form";
 
 export default function UploadPage(){
   const [modal, setModal] = useState(false);
@@ -24,6 +25,7 @@ export default function UploadPage(){
   const [openProfiles, setOpenProfiles] = useState<{ [key: string]: boolean }>(
     {}
   );
+  const [openUploadByLink, setOpenUploadByLink] = useState(false);
   const [file, setFile] = useState<FileFullPayload[]>([]);
   const router = useRouter();
   useEffect(() => {
@@ -71,10 +73,27 @@ export default function UploadPage(){
   //     throw new Error((error as Error).message);
   //   }
   // }
+  
+  const handleSubmitLink =async (formData: FormData)=>{
+    try {
+      const loading=toast.loading("Loading...");
+      formData.set("userId", userData?.id as string);
+      formData.set("role", userData?.role as Role);
+      const update = await updateUploadFileByLink(formData);
+      if(!update){
+        toast.error("error adding link")
+      }
+      toast.success("Success", {id:loading});
+      return update;
+    } catch (error) {
+      throw new Error((error as Error).message);
+    }
+  }
   if(userData){
     if(status==="authenticated" && !userData.title) return router.push("/pilihRole");
   }
   if(status=="loading" || !userData) return <>Loading...</>;
+
   return (
     <div className="pt-44">
       <>
@@ -96,6 +115,13 @@ export default function UploadPage(){
               >
                 Here !
               </FormButton>
+              <FormButton
+                type="button"
+                onClick={() => setOpenUploadByLink(true)}
+                variant="base"
+              >
+                Upload By Link
+              </FormButton>
               {modal && (
                 <ModalProfile
                   onClose={() => {
@@ -103,6 +129,25 @@ export default function UploadPage(){
                   }}
                 >
                   <FileUploader />
+                </ModalProfile>
+              )}
+              {openUploadByLink && (
+                <ModalProfile
+                  onClose={() => {
+                    setOpenUploadByLink(false);
+                  }}
+                >
+                  <form onSubmit={(e) => {
+              e.preventDefault();
+              const formdata = new FormData(e.currentTarget);
+
+              handleSubmitLink(formdata);
+            }}>
+                  <TextField type="text" name="name" label="Name File" placeholder="Name File" required={true}/>
+                  <TextField type="text" name="type" label="Type File" placeholder="Type File" required={true}/>
+                  <TextField type="text" name="url" label="Link File" placeholder="Link File" required={true}/>
+                  <FormButton type="submit" variant="base">Submit</FormButton>
+                  </form>
                 </ModalProfile>
               )}
             </div>
