@@ -325,6 +325,29 @@ export const updateRole = async (id: string, data: FormData) => {
     throw new Error((error as Error).message);
   }
 };
+export const DeleteRoleFileFromNotif = async (id: string) => {
+  try {
+    const session = await nextGetServerSession();
+    if (!session) {
+      throw new Error("eror");
+    }
+
+    const role = "DELETE" as Role;
+    const update = await prisma.fileWork.update({
+      where: { id: id },
+      data: {
+        userRole: role,
+      },
+    });
+    if (!update) {
+      throw new Error("eror");
+    }
+    revalidatePath("/profile/notification/Validasi");
+    return update;
+  } catch (error) {
+    throw new Error((error as Error).message);
+  }
+};
 
 export const UpdateGeneralProfileById = async (data: FormData) => {
   try {

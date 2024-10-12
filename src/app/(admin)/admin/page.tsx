@@ -10,6 +10,7 @@ interface cardProps {
   desc: string;
 }
 
+
 export default async function AdminPage() {
   const dataUser = await findAllUsers({
     AND: [{ NOT: { role: "ADMIN" } }, { NOT: { role: "GURU" } }],

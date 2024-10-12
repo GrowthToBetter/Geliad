@@ -85,6 +85,7 @@ enum Role {
   GURU
   ADMIN
   VALIDATOR
+  DELETE
 }
 
 enum Gender {

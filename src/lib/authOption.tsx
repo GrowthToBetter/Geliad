@@ -109,11 +109,23 @@ export const authOptions: AuthOptions = {
         if (user.email) {
           const userDatabase = await findUser({ email: user.email });
           if (!userDatabase) {
+            const role = 
+              user.email.includes("student") && user.email.includes("smktelkom-mlg")
+                ? "SISWA"
+                : user.email === "dummyakun12311@gmail.com"
+                ? "ADMIN"
+                : user.email.includes("smktelkom-mlg")
+                ? "GURU"
+                : null;
+
+            if (!role) {
+              return "/AccessDenied";
+            }
             await createUser({
               email: user.email,
               photo_profile: user.image || "https://res.cloudinary.com/dvwhepqbd/image/upload/v1720580914/pgfrhzaobzcajvugl584.png",
               name: user.name || "",
-              role: user.email.includes("student")? "SISWA":"GURU",
+              role,
               userAuth: {
                 create: {
                   last_login: new Date(),

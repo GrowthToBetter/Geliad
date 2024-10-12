@@ -13,7 +13,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { RequestStatus } from "@prisma/client";
-import { commentFile, updateStatus } from "@/utils/server-action/userGetServerSession";
+import { commentFile, DeleteRoleFileFromNotif, updateStatus } from "@/utils/server-action/userGetServerSession";
 import toast from "react-hot-toast";
 import { TextField } from "@/app/components/utils/Form";
 import { updateFile } from "@/utils/user.query";
@@ -106,10 +106,10 @@ export default function UploadPage() {
       throw new Error((error as Error).message);
     }
   };
-  const filteredFile =
+  const filteredFile = 
     userData?.role === "GURU"
       ? file.filter((file) => file.userRole === "SISWA")
-      : userData?.role==="VALIDATOR" ? file.filter((file) => file.userRole === "GURU") : file;
+      : userData?.role==="VALIDATOR" ? file.filter((file) => file.userRole === "GURU") : file.filter((file) => file.userRole !== "DELETE");
   if (userData) {
     if (status === "authenticated" && !userData.title)
       return router.push("/pilihRole");
@@ -140,6 +140,19 @@ export default function UploadPage() {
       console.log(formData)
     } catch (error) {
       toast.error(`Error: ${(error as Error).message}`);
+    }
+  };
+  const handleRemove = (fileId: string) => {
+    try {
+      const loading = toast.loading("Loading...");
+      const update = DeleteRoleFileFromNotif(fileId);
+      if (!update) {
+        throw new Error("eror");
+      }
+      toast.success("Success", { id: loading });
+      return update
+    } catch (error) {
+      throw new Error((error as Error).message);
     }
   };
   return (
@@ -206,6 +219,9 @@ export default function UploadPage() {
                           {file.status}
                         </span>
                       </Link>
+                      <FormButton type="button" variant="base" onClick={()=>handleRemove(file.id)}>
+                          delete
+                      </FormButton>
                       <button
                         onClick={() =>file.mimetype.includes("msword") || file.mimetype.includes("application/vnd.openxmlformats-officedocument.wordprocessingml.document") ? handlefile(file.id) : router.push(file.path)}
                         className="ml-4 text-blue-500 hover:underline"
