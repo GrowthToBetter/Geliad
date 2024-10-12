@@ -25,6 +25,8 @@ model User {
   Sugestion     String?
   ClassNumber   String?
   validatorId   String?
+  generation    String?
+  cover         String?
   File          fileWork[] @relation("file_id")
   validator     User?      @relation("teacherToStudent", fields: [validatorId], references: [id])
   user          User[]     @relation("teacherToStudent")

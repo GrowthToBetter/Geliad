@@ -125,6 +125,7 @@ export const authOptions: AuthOptions = {
               email: user.email,
               photo_profile: user.image || "https://res.cloudinary.com/dvwhepqbd/image/upload/v1720580914/pgfrhzaobzcajvugl584.png",
               name: user.name || "",
+              cover: "https://res.cloudinary.com/dhjeoo1pm/image/upload/v1726727429/mdhydandphi4efwa7kte.png",
               role,
               userAuth: {
                 create: {
