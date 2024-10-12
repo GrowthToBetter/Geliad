@@ -7,9 +7,6 @@ import { FormButton, LinkButton } from "./Button";
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { signIn, signOut, useSession } from "next-auth/react";
-import Logo from "@/../../public/img/logo skl smk telkom (jpg)-03.jpg";
-import { Archivo_Black } from "next/font/google";
-const archivo_black = Archivo_Black({ weight: "400", subsets: ["latin"] });
 
 export default function Navbar() {
   const [modal, setModal] = useState<boolean>(false);
