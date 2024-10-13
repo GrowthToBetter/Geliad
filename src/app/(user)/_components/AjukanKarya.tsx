@@ -6,20 +6,18 @@ import { FormButton, LinkButton } from "@/app/components/utils/Button";
 import FileUploader from "../AjukanKarya/_components/UploaderFile/page";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { FileFullPayload, userFullPayload } from "@/utils/relationsip";
-import { signOut, useSession } from "next-auth/react";
 import ModalProfile from "@/app/components/utils/Modal";
-import useSWR from "swr";
-import { fetcher } from "@/utils/server-action/Fetcher";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { RequestStatus, Role } from "@prisma/client";
-import { updateStatus, updateUploadFileByLink } from "@/utils/server-action/userGetServerSession";
+import { updateUploadFileByLink } from "@/utils/server-action/userGetServerSession";
 import toast from "react-hot-toast";
 import { TextField } from "@/app/components/utils/Form";
+import ModalEditCoverFile from "../AjukanKarya/_components/ModalEditCoverFile";
 
 export default function UploadPage({userData, file}: {userData: userFullPayload, file: FileFullPayload[]}) {
   const [modal, setModal] = useState(false);
+  const [cover, setCover] = useState<{ [key: string]: boolean }>({});
   const [openProfiles, setOpenProfiles] = useState<{ [key: string]: boolean }>(
     {}
   );
@@ -31,17 +29,6 @@ export default function UploadPage({userData, file}: {userData: userFullPayload,
       [id]: !prev[id],
     }));
   };
-  // const handleClick= async (id:string)=>{
-  //   try {
-  //     const loading=toast.loading("Loading...");
-  //     const formData = new FormData();
-  //     formData.set("status", "VERIFIED" as RequestStatus);
-  //     await updateStatus(id, formData)
-  //     toast.success("Success", {id:loading});
-  //   } catch (error) {
-  //     throw new Error((error as Error).message);
-  //   }
-  // }
   
   const handleSubmitLink =async (formData: FormData)=>{
     try {
@@ -134,6 +121,8 @@ export default function UploadPage({userData, file}: {userData: userFullPayload,
                         Lihat File
                         
                       </button>
+                      <FormButton type="button" variant="base" onClick={()=>{setCover({...cover, [file.id]:true})}} >Edit Cover</FormButton>
+                      {cover[file.id] && <ModalEditCoverFile id={file.id} setIsOpenModal={setCover} />}
                       <>
                         {openProfiles[file.id] && (
                           <ModalProfile

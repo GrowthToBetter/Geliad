@@ -7,16 +7,16 @@ import { useEffect, useState } from "react";
 import { FileFullPayload, userFullPayload } from "@/utils/relationsip";
 import { signOut, useSession } from "next-auth/react";
 import ModalProfile from "@/app/components/utils/Modal";
-import useSWR from "swr";
-import { fetcher } from "@/utils/server-action/Fetcher";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { RequestStatus } from "@prisma/client";
-import { updateStatus } from "@/utils/server-action/userGetServerSession";
-import toast from "react-hot-toast";
 
-export default function UploadPage({userData, file}: {userData: userFullPayload, file: FileFullPayload[]}) {
+export default function UploadPage({
+  userData,
+  file,
+}: {
+  userData: userFullPayload;
+  file: FileFullPayload[];
+}) {
   const { data: session, status } = useSession();
   const [openProfiles, setOpenProfiles] = useState<{ [key: string]: boolean }>(
     {}
@@ -131,16 +131,22 @@ export default function UploadPage({userData, file}: {userData: userFullPayload,
                         </ModalProfile>
                       )}
                       <button
-                        onClick={() =>file.mimetype.includes("msword") || file.mimetype.includes("application/vnd.openxmlformats-officedocument.wordprocessingml.document") ? handleProf(file.id) : router.push(file.path)}
+                        onClick={() =>
+                          file.mimetype.includes("msword") ||
+                          file.mimetype.includes(
+                            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                          )
+                            ? handleProf(file.id)
+                            : router.push(file.path)
+                        }
                         className="ml-4 text-blue-500 hover:underline"
                       >
                         Lihat File
-                        
                       </button>
                       <>
                         {openProfiles[file.id] && (
                           <ModalProfile
-                           title={file.filename}
+                            title={file.filename}
                             onClose={() =>
                               setOpenProfiles({
                                 ...openProfiles,

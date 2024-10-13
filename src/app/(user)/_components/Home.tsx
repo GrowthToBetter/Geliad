@@ -106,7 +106,7 @@ export default function Home({userData, files}: {userData:userFullPayload , file
           {filteredFiles.map((file, i) => (
             <Card
               LinktoVisit={file.path}
-              bgImage="https://www.shutterstock.com/image-vector/none-icon-thin-linear-outline-260nw-2139308813.jpg"
+              bgImage={ file?.coverFile ? file.coverFile :"https://www.shutterstock.com/image-vector/none-icon-thin-linear-outline-260nw-2139308813.jpg"}
               nama={file.filename}
               key={i}
               file={file}

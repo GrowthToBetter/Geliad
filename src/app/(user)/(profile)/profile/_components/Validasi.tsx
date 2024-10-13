@@ -13,20 +13,29 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { RequestStatus } from "@prisma/client";
-import { commentFile, DeleteRoleFileFromNotif, updateStatus } from "@/utils/server-action/userGetServerSession";
+import {
+  addViews,
+  commentFile,
+  DeleteRoleFileFromNotif,
+  updateStatus,
+} from "@/utils/server-action/userGetServerSession";
 import toast from "react-hot-toast";
 import { TextField } from "@/app/components/utils/Form";
 import { updateFile } from "@/utils/user.query";
 
-export default function UploadPage({userData, file}: {userData: userFullPayload, file: FileFullPayload[]}) {
+export default function UploadPage({
+  userData,
+  file,
+}: {
+  userData: userFullPayload;
+  file: FileFullPayload[];
+}) {
   const { data: session, status } = useSession();
   const [taskFields, setTaskFields] = useState([{ task: "", details: [""] }]);
   const [openProfiles, setOpenProfiles] = useState<{ [key: string]: boolean }>(
     {}
   );
-  const [openFile, setOpenFile] = useState<{ [key: string]: boolean }>(
-    {}
-  );
+  const [openFile, setOpenFile] = useState<{ [key: string]: boolean }>({});
   const [modal, setModal] = useState(false);
   const pathName = usePathname();
   const router = useRouter();
@@ -70,34 +79,40 @@ export default function UploadPage({userData, file}: {userData: userFullPayload,
       throw new Error((error as Error).message);
     }
   };
-  const filteredFile = 
+  const filteredFile =
     userData?.role === "GURU"
       ? file.filter((file) => file.userRole === "SISWA")
-      : userData?.role==="VALIDATOR" ? file.filter((file) => file.userRole === "GURU") : file.filter((file) => file.userRole !== "DELETE");
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>, idFile:string, idUser:string) => {
+      : userData?.role === "VALIDATOR"
+      ? file.filter((file) => file.userRole === "GURU")
+      : file.filter((file) => file.userRole !== "DELETE");
+  const handleSubmit = async (
+    e: FormEvent<HTMLFormElement>,
+    idFile: string,
+    idUser: string
+  ) => {
     e.preventDefault();
     try {
       const loading = toast.loading("Loading...");
       const formData = new FormData(e.target as HTMLFormElement);
-      
+
       for (const field of taskFields) {
         formData.set("Task", field.task);
-        const user={
+        const user = {
           connect: {
-            id: idUser
-          }
-        }
-        const file={
+            id: idUser,
+          },
+        };
+        const file = {
           connect: {
-            id: idFile
-          }
-        }
+            id: idFile,
+          },
+        };
         await commentFile(formData.get("Task") as string, file, user);
       }
       toast.success("Success", { id: loading });
       setTaskFields([{ task: "", details: [""] }]);
       setModal(false);
-      console.log(formData)
+      console.log(formData);
     } catch (error) {
       toast.error(`Error: ${(error as Error).message}`);
     }
@@ -110,7 +125,20 @@ export default function UploadPage({userData, file}: {userData: userFullPayload,
         throw new Error("eror");
       }
       toast.success("Success", { id: loading });
-      return update
+      return update;
+    } catch (error) {
+      throw new Error((error as Error).message);
+    }
+  };
+  const addView = async (file: FileFullPayload) => {
+    const loading = toast.loading("Loading...");
+    try {
+      const update = await addViews(file.id, file.views+1);
+      if (!update) {
+        toast.error("Gagal Menambahkan Like");
+      }
+      toast.success("Success", { id: loading });
+      return update;
     } catch (error) {
       throw new Error((error as Error).message);
     }
@@ -118,7 +146,9 @@ export default function UploadPage({userData, file}: {userData: userFullPayload,
   return (
     <div className="min-h-screen-minus-10">
       <>
-        {userData?.role === "GURU" || userData?.role === "VALIDATOR" || userData?.role==="ADMIN" ? (
+        {userData?.role === "GURU" ||
+        userData?.role === "VALIDATOR" ||
+        userData?.role === "ADMIN" ? (
           <>
             <ul className="flex pt-32 justify-evenly font-semibold   ">
               <li>
@@ -179,20 +209,32 @@ export default function UploadPage({userData, file}: {userData: userFullPayload,
                           {file.status}
                         </span>
                       </Link>
-                      <FormButton type="button" variant="base" onClick={()=>handleRemove(file.id)}>
-                          delete
+                      <FormButton
+                        type="button"
+                        variant="base"
+                        onClick={() => handleRemove(file.id)}
+                      >
+                        delete
                       </FormButton>
                       <button
-                        onClick={() =>file.mimetype.includes("msword") || file.mimetype.includes("application/vnd.openxmlformats-officedocument.wordprocessingml.document") ? handlefile(file.id) : router.push(file.path)}
+                        onClick={() =>{
+                          file.mimetype.includes("msword") ||
+                          file.mimetype.includes(
+                            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                          )
+                            ? handlefile(file.id)
+                            : router.push(file.path);
+                          addView(file);
+                        }
+                        }
                         className="ml-4 text-blue-500 hover:underline"
                       >
                         Lihat File
-                        
                       </button>
                       <>
                         {openFile[file.id] && (
                           <ModalProfile
-                           title={file.filename}
+                            title={file.filename}
                             onClose={() =>
                               setOpenFile({
                                 ...openFile,
@@ -278,7 +320,15 @@ export default function UploadPage({userData, file}: {userData: userFullPayload,
                                 onClose={() => setModal(false)}
                                 title="comment"
                               >
-                                <form onSubmit={(e) => handleSubmit(e, file.id, userData?.id as string)}>
+                                <form
+                                  onSubmit={(e) =>
+                                    handleSubmit(
+                                      e,
+                                      file.id,
+                                      userData?.id as string
+                                    )
+                                  }
+                                >
                                   {taskFields.map((field, taskIndex) => (
                                     <div
                                       key={taskIndex}
@@ -300,22 +350,22 @@ export default function UploadPage({userData, file}: {userData: userFullPayload,
                                         />
                                       </div>
                                       <div className="flex justify-start">
-                                      <FormButton
-                                        type="button"
-                                        onClick={() => handleAddTaskField()}
-                                        className="rounded-full flex justify-center items-center text-center"
-                                        variant="base"
-                                      >
-                                        +
-                                      </FormButton>
-                                      <FormButton
-                                        type="button"
-                                        onClick={() => handleMinTaskField()}
-                                        className="rounded-full flex justify-center items-center text-center"
-                                        variant="base"
-                                      >
-                                        -
-                                      </FormButton>
+                                        <FormButton
+                                          type="button"
+                                          onClick={() => handleAddTaskField()}
+                                          className="rounded-full flex justify-center items-center text-center"
+                                          variant="base"
+                                        >
+                                          +
+                                        </FormButton>
+                                        <FormButton
+                                          type="button"
+                                          onClick={() => handleMinTaskField()}
+                                          className="rounded-full flex justify-center items-center text-center"
+                                          variant="base"
+                                        >
+                                          -
+                                        </FormButton>
                                       </div>
                                     </div>
                                   ))}

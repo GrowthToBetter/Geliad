@@ -3,11 +3,15 @@ import { FileFullPayload } from "@/utils/relationsip";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ModalProfile from "./Modal";
+import { FormButton } from "./Button";
+import toast from "react-hot-toast";
+
+import { addLike, addViews } from "@/utils/server-action/userGetServerSession";
 
 export default function Card({
   bgImage,
   nama,
-  file
+  file,
 }: {
   bgImage: string;
   nama: string;
@@ -15,30 +19,75 @@ export default function Card({
   file: FileFullPayload;
 }) {
   const [openProfiles, setOpenProfiles] = useState<boolean>(false);
-  const router= useRouter();
+  const router = useRouter();
+  const [like, setLike] = useState<boolean>(false);
+  const [views, setViews] = useState<number>(file.views);
+  const addLikes = async () => {
+    setLike(!like);
+    const loading = toast.loading("Loading...");
+    try {
+      const update = await addLike(
+        file.id,
+        like ? file.Like - 1 : file.Like + 1
+      );
+      if (!update) {
+        toast.error("Gagal Menambahkan Like");
+      }
+      toast.success("Success", { id: loading });
+      return update;
+    } catch (error) {
+      throw new Error((error as Error).message);
+    }
+  };
+  const addView = async () => {
+    setViews(views + 1);
+    const loading = toast.loading("Loading...");
+    try {
+      const update = await addViews(file.id, views);
+      if (!update) {
+        toast.error("Gagal Menambahkan Like");
+      }
+      toast.success("Success", { id: loading });
+      return update;
+    } catch (error) {
+      throw new Error((error as Error).message);
+    }
+  };
   return (
     <div
       className="w-64 rounded-lg m-10 h-80 bg-cover bg-no-repeat relative"
       style={{ backgroundImage: `url(${bgImage})` }}
     >
       <div className="bg-gradient-to-t from-black mix-blend-multiply to-white w-full h-2/3 bottom-0 absolute"></div>
-      <div className="flex justify-start m-3 w-full h-fit absolute flex-col bottom-0">
-        <h1 className="text-white font-bold border-b-2 w-56 border-b-secondary text-xl relative bottom-0">
+      <div className="flex justify-between absolute w-full h-full flex-col items-center">
+        <h1 className="text-black bg-Primary font-bold border-b-2 w-full border-b-secondary text-sm relative bottom-0">
           {nama}
         </h1>
-        <button
-          onClick={() =>
-            file.mimetype.includes("msword") ||
-            file.mimetype.includes(
-              "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            )
-              ? setOpenProfiles(true)
-              : router.push(file.path)
-          }
-          className="ml-4 text-blue-500 hover:underline"
-        >
-          Lihat File
-        </button>
+        <div>
+          <FormButton
+            variant="base"
+            onClick={() => {
+              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+              file.mimetype.includes("msword") ||
+              file.mimetype.includes(
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              )
+                ? setOpenProfiles(true)
+                : router.push(file.path);
+              addView();
+            }}
+            className=" text-blue-500 hover:underline"
+          >
+            Lihat File
+          </FormButton>
+          <div className="flex justify-between">
+          <button className="text-white hover:underline" onClick={addLikes}>
+            Like : {file.Like}
+          </button>
+          <p className="text-white">views: {views}</p>
+
+          </div>
+        </div>
         <>
           {openProfiles && (
             <ModalProfile

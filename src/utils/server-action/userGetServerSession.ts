@@ -377,6 +377,45 @@ export const DeleteRoleFileFromNotif = async (id: string) => {
   }
 };
 
+export const addLike=async (id :string,like: number)=>{
+  try {
+    const update= await prisma.fileWork.update({
+      where: {
+        id: id
+      },
+      data: {
+        Like: like
+      }
+    })
+    if(!update){
+      throw new Error("Gagal Menambahkan Like")
+    }
+    revalidatePath("/")
+    return update;
+  } catch (error) {
+    throw new Error((error as Error).message);
+  }
+}
+export const addViews=async (id :string, views: number)=>{
+  try {
+    const update= await prisma.fileWork.update({
+      where: {
+        id: id
+      },
+      data: {
+        views
+      }
+    })
+    if(!update){
+      throw new Error("Gagal Menambahkan Like")
+    }
+    revalidatePath("/")
+    return update;
+  } catch (error) {
+    throw new Error((error as Error).message);
+  }
+}
+
 export const UpdateGeneralProfileById = async (data: FormData) => {
   try {
     const session = await nextGetServerSession();
