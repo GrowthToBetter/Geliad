@@ -49,7 +49,7 @@ export default function UploadPage({userData, file}: {userData: userFullPayload,
   return (
     <div className="pt-44">
       <>
-        <div className="flex justify-center items-center w-screen h-fit">
+        <div className="flex justify-center items-center min-w-max h-fit">
           <div className="shadow-inner container w-[1300px] border-2 border-gray-300 rounded-lg h-fit">
             <div className="shadow-inner container p-10 w-[1300px] border-2 border-gray-300 rounded-lg ">
               <h1 className="font-bold text-[40px] w-[400px]">

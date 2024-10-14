@@ -26,25 +26,22 @@ export default function Navbar() {
   return (
     <main>
       <nav className="bg-Primary fixed w-full z-20 top-0 start-0 border-b border-gray-200">
-        <div className="w-screen flex flex-wrap items-center justify-between mx-auto p-4 lg:px-20">
+        <div className="min-w-max flex flex-wrap items-center justify-between mx-auto p-4 lg:px-20">
           <div className="w-fit h-fit flex-col justify-center items-center space-x-72"></div>
           <Link
             href="#"
             className="flex items-center space-x-3 rtl:space-x-reverse"
           >
             <div>
-            <h1 className="tracking-[3rem] text-2xl font-bold">GELIAD
-            <p className="text-center text-sm font-normal tracking-widest">Dari Tugas Jadi Karya</p>
-            </h1>
+              <h1 className="tracking-[3rem] text-2xl font-bold">
+                GELIAD
+                <p className="text-center text-sm font-normal tracking-widest">
+                  Dari Tugas Jadi Karya
+                </p>
+              </h1>
             </div>
           </Link>
           <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-            <FormButton
-              variant="base"
-              onClick={() => router.push("/profile/notification/Karya")}
-            >
-              Notification
-            </FormButton>
             <div>
               {status === "unauthenticated" ? (
                 <button
@@ -91,6 +88,15 @@ export default function Navbar() {
                             <p className="mx-auto text-sm text-black border-t-2 border-Primary">
                               Sign Out
                             </p>
+                          </FormButton>
+                          <FormButton
+                            variant="base"
+                            className="w-full"
+                            onClick={() =>
+                              router.push("/profile/notification/Karya")
+                            }
+                          >
+                            Notification
                           </FormButton>
                         </div>
                       )}

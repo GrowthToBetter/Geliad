@@ -67,7 +67,7 @@ export default function UploadPage({
           <></>
         )}
         <div
-          className={`flex justify-center items-center w-screen h-fit ${
+          className={`flex justify-center items-center min-w-max h-fit ${
             userData?.role == "SISWA" ? "pt-44" : ""
           }`}
         >

@@ -12,11 +12,13 @@ export default function Card({
   bgImage,
   nama,
   file,
+  className,
 }: {
   bgImage: string;
   nama: string;
   LinktoVisit: string;
   file: FileFullPayload;
+  className?: string;
 }) {
   const [openProfiles, setOpenProfiles] = useState<boolean>(false);
   const router = useRouter();
@@ -55,7 +57,7 @@ export default function Card({
   };
   return (
     <div
-      className="w-64 rounded-lg m-10 h-80 bg-cover bg-no-repeat relative"
+      className={`w-64 rounded-lg h-80 bg-cover bg-no-repeat relative ${className}`}
       style={{ backgroundImage: `url(${bgImage})` }}
     >
       <div className="bg-gradient-to-t from-black mix-blend-multiply to-white w-full h-2/3 bottom-0 absolute"></div>

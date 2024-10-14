@@ -17,20 +17,21 @@ import { fetcher } from "@/utils/server-action/Fetcher";
 import useSWR from "swr";
 import Card from "../../components/utils/card";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function Home({userData, files}: {userData:userFullPayload , files:FileFullPayload[]}) {
   const { data: session, status } = useSession();
   const router=useRouter();
   const filteredFiles = files.filter((file) => file.status === "VERIFIED");
   return (
-    <>
-      <div className="bg-Primary flex flex-col justify-center items-center relative">
-        <div className="flex justify-center items-center h-screen bg-Primary">
-          <div className="w-fit">
-            <h1 className="text-3xl font-bold w-[400px]">
+    <div className="">
+      <div className="bg-Primary min-w-max p-10 flex flex-col justify-center items-center relative">
+        <div className="flex justify-center relative mt-14 md:m-0 flex-col md:flex-row items-center h-screen w-fit bg-Primary">
+          <div className="w-full mt-20">
+            <h1 className="text-3xl font-bold md:w-[400px] w-[200px]">
               Berjalan Bersama Menghasilkan Ribuan Karya
             </h1>
-            <p className="w-[400px] pt-5 text-sm font-semibold">
+            <p className="md:w-[400px] w-[200px] pt-5 text-sm font-semibold">
               G E L I A D Tempatmu Untuk Menciptakan Banyak Bakat Hebat <br />
               Berjalan Bersama Untuk Generasi Hebat
             </p>
@@ -43,14 +44,14 @@ export default function Home({userData, files}: {userData:userFullPayload , file
             </FormButton>
           </div>
           <Image src={Gambar} alt="Gambar" width={520} height={400} />
-          <form className=" w-[1000px] absolute top-32">
+          <form className=" md:min-w-full min-w-max absolute md:top-32 right-0 top-12" onSubmit={(e) => toast.error("Fitur ini sedang dalam tahap pengembangan")}>
             <label
               htmlFor="search"
               className="mb-2 text-sm font-medium text-gray-900 sr-only"
             >
               Search
             </label>
-            <div className="relative">
+            <div className="relative min-w-max">
               <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                 <svg
                   className="w-4 h-4 text-gray-500 "
@@ -71,7 +72,7 @@ export default function Home({userData, files}: {userData:userFullPayload , file
               <input
                 type="search"
                 id="search"
-                className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500"
+                className="block min-w-max md:min-w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Search"
                 required
               />
@@ -101,22 +102,21 @@ export default function Home({userData, files}: {userData:userFullPayload , file
           </ul>
         </div>
       </div>
-      <div>
-        <div className="grid bg-slate-500 lg:grid-rows-2 md:grid-cols-2 grid-cols-1 md:grid-rows-4 lg:grid-cols-4 gap-2">
+      <div className=" max-w-max bg-slate-500 flex-wrap flex justify-center items-center relative">
           {filteredFiles.map((file, i) => (
             <Card
               LinktoVisit={file.path}
               bgImage={ file?.coverFile ? file.coverFile :"https://www.shutterstock.com/image-vector/none-icon-thin-linear-outline-260nw-2139308813.jpg"}
               nama={file.filename}
               key={i}
+              className="m-5"
               file={file}
             />
           ))}
-        </div>
       </div>
       <div>
         <div className="justify-center flex bg-white pt-40 flex-col h-screen xl:flex-row items-center px-4">
-          <div className="max-w-[800px]">
+          <div className="max-w-max">
             <h1
               className={`text-[64px] text-start ${archivo_black.className} leading-none`}
             >
@@ -143,6 +143,6 @@ export default function Home({userData, files}: {userData:userFullPayload , file
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
