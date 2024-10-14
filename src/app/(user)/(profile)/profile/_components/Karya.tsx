@@ -23,7 +23,9 @@ export default function UploadPage({
   );
   const pathName = usePathname();
   const router = useRouter();
-  const [comment, setComment] = useState(false);
+  const [comment, setComment] = useState<{ [key: string]: boolean }>(
+    {}
+  );
 
   const handleProf = (id: string) => {
     setOpenProfiles((prev) => ({
@@ -31,7 +33,12 @@ export default function UploadPage({
       [id]: !prev[id],
     }));
   };
-
+  const handleComment = (id: string) => {
+    setComment((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
   const filteredFile = file.filter((file) => file.userId == userData?.id);
   return (
     <div className="min-h-screen-minus-10">
@@ -105,7 +112,7 @@ export default function UploadPage({
                             variant="base"
                             type="button"
                             onClick={() => {
-                              setComment(!comment);
+                              handleComment(file.id);
                             }}
                           >
                             {" "}
@@ -113,10 +120,10 @@ export default function UploadPage({
                           </FormButton>
                         </>
                       )}
-                      {comment && (
+                      {comment[file.id] && (
                         <ModalProfile
                           onClose={() => {
-                            setComment(false);
+                            handleComment(file.id);
                           }}
                         >
                           {file.comment.map((comment) => (
