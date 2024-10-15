@@ -23,7 +23,6 @@ export default function Card({
   const [openProfiles, setOpenProfiles] = useState<boolean>(false);
   const router = useRouter();
   const [like, setLike] = useState<boolean>(false);
-  const [views, setViews] = useState<number>(file.views);
   const addLikes = async () => {
     setLike(!like);
     const loading = toast.loading("Loading...");
@@ -42,10 +41,9 @@ export default function Card({
     }
   };
   const addView = async () => {
-    setViews(views + 1);
     const loading = toast.loading("Loading...");
     try {
-      const update = await addViews(file.id, views);
+      const update = await addViews(file.id, file.views + 1);
       if (!update) {
         toast.error("Gagal Menambahkan Like");
       }
@@ -86,7 +84,7 @@ export default function Card({
           <button className="text-white hover:underline" onClick={addLikes}>
             Like : {file.Like}
           </button>
-          <p className="text-white">views: {views}</p>
+          <p className="text-white">views: {file.views}</p>
 
           </div>
         </div>

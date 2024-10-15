@@ -43,7 +43,6 @@ const FileUploader: React.FC = () => {
             const errorData = await response.json();
             throw new Error(errorData.error || `Failed to upload ${file.name}`);
           }
-
           return await response.json();
         })
       );

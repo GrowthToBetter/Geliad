@@ -7,6 +7,9 @@ import { createUser, updateUser } from "../user.query";
 import { revalidatePath } from "next/cache";
 import { nextGetServerSession } from "@/lib/authOption";
 import { hash } from "bcrypt";
+import { userFullPayload } from "../relationsip";
+import { GaxiosResponse } from "googleapis-common";
+import { drive_v3 } from "googleapis/build/src/apis/drive/v3";
 
 export const UpdateUserById = async (data: FormData) => {
   try {
@@ -353,6 +356,31 @@ export const updateRole = async (id: string, data: FormData) => {
     throw new Error((error as Error).message);
   }
 };
+
+export const createFile=async (file : File, driveResponse:GaxiosResponse<drive_v3.Schema$File>, user:userFullPayload)=>{
+  try{
+    const create=await prisma.fileWork.create({
+      data: {
+        filename: file.name,
+        mimetype: file.type,
+        size: file.size,
+        path: driveResponse.data.webViewLink || "",
+        userId: user.id,
+        status: "PENDING",
+        userRole: user.role,
+      }
+    })
+    if(!create){
+      throw new Error("eror");
+    }
+    revalidatePath("/AjukanKarya");
+    return create;
+  }catch(error){
+    throw new Error((error as Error).message);
+  }
+  
+}
+
 export const DeleteRoleFileFromNotif = async (id: string) => {
   try {
     const session = await nextGetServerSession();

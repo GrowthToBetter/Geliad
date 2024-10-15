@@ -5,7 +5,8 @@ import { drive_v3 } from "googleapis/build/src/apis/drive/v3";
 import { Readable } from "stream";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-
+import { createFile } from "@/utils/server-action/userGetServerSession";
+import { userFullPayload } from "@/utils/relationsip";
 
 const credentials = {
   type: process.env.GOOGLE_ACCOUNT_TYPE,
@@ -17,7 +18,7 @@ const credentials = {
   auth_uri: process.env.GOOGLE_AUTH_URI,
   token_uri: process.env.GOOGLE_TOKEN_URI,
   auth_provider_x509_cert_url: process.env.GOOGLE_AUTH_PROVIDER_X509_CERT_URL,
-  client_x509_cert_url: process.env.GOOGLE_CLIENT_X509_CERT_URL
+  client_x509_cert_url: process.env.GOOGLE_CLIENT_X509_CERT_URL,
 } as any;
 
 const auth = new google.auth.GoogleAuth({
@@ -36,7 +37,7 @@ export async function POST(req: NextRequest) {
     const file = formData.get("file") as File | null;
     const url = new URL(req.url);
     const userId = url.searchParams.get("userId");
-    
+
     console.log("Received file:", file?.name, "Size:", file?.size);
     console.log("User ID:", userId);
 
@@ -101,19 +102,13 @@ export async function POST(req: NextRequest) {
 
     console.log("File permissions set");
 
-    const uploadedFile = await prisma.fileWork.create({
-      data: {
-        filename: file.name,
-        mimetype: file.type,
-        size: file.size,
-        path: driveResponse.data.webViewLink || "",
-        userId: userId,
-        status: "PENDING",
-        userRole: user.role,
-      },
-    });
+    const uploadedFile = await createFile(
+      file,
+      driveResponse,
+      user as userFullPayload
+    );
     console.log("File record created in database:", uploadedFile.id);
-    
+
     revalidatePath("/AjukanKarya");
     return NextResponse.json(uploadedFile);
   } catch (error) {
