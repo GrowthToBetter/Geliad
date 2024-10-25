@@ -25,7 +25,7 @@ export default function Navbar() {
   const { data: session, status } = useSession();
   return (
     <main>
-      <nav className="bg-Primary fixed w-full z-20 top-0 start-0 border-b border-gray-200">
+      <nav className="bg-Secondary fixed w-full z-20 top-0 start-0 border-b border-gray-200">
         <div className="min-w-max flex flex-wrap items-center justify-between mx-auto p-4 lg:px-20">
           <div className="w-fit h-fit flex-col justify-center items-center space-x-72"></div>
           <Link
@@ -33,10 +33,10 @@ export default function Navbar() {
             className="flex items-center space-x-3 rtl:space-x-reverse"
           >
             <div>
-              <h1 className="tracking-[3rem] text-2xl font-bold">
+              <h1 className="tracking-[1.5rem] text-2xl text-white font-bold">
                 GELIAD
-                <p className="text-center text-sm font-normal tracking-widest">
-                  Dari Tugas Jadi Karya
+                <p className="text-center text-sm font-normal text-white tracking-widest">
+                  Berkolaborasi Meningkatkan Literasi
                 </p>
               </h1>
             </div>
@@ -140,7 +140,7 @@ export default function Navbar() {
                         className={`${
                           pathName === "/"
                             ? "text-black border-2 border-Secondary"
-                            : "text-black"
+                            : "text-white"
                         } rounded-md hover:text-blue-600 hover:border-2 p-2 hover:border-Secondary`}
                       >
                         Beranda
@@ -152,7 +152,7 @@ export default function Navbar() {
                         className={`${
                           pathName === "/AjukanKarya"
                             ? "text-black border-2 border-Secondary"
-                            : "text-black"
+                            : "text-white"
                         } rounded-md hover:text-blue-600 hover:border-2 p-2 `}
                       >
                         Ajukan Karya
@@ -176,7 +176,7 @@ export default function Navbar() {
                   className={`${
                     pathName === "/"
                       ? "text-black border-2 bg-white border-Primary"
-                      : "text-black"
+                      : "text-white"
                   } rounded-md  hover:text-black  hover:bg-white duration-200 hover:border-2 p-2 `}
                 >
                   Beranda
@@ -188,7 +188,7 @@ export default function Navbar() {
                   className={`${
                     pathName === "/AjukanKarya"
                       ? "text-black border-2 bg-white border-Primary"
-                      : "text-black"
+                      : "text-white"
                   } rounded-md hover:text-black hover:bg-white duration-200 hover:border-2 p-2 `}
                 >
                   Ajukan Karya

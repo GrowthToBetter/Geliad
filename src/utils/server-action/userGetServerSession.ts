@@ -1,15 +1,38 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use server";
 
-import { Class,  Gender, RequestStatus, Role, Status, Title } from "@prisma/client";
+import { Class,  Gender, Genre, RequestStatus, Role, Status, Title } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { createUser, updateUser } from "../user.query";
 import { revalidatePath } from "next/cache";
+import { google } from "googleapis";
+import { drive_v3 } from "googleapis/build/src/apis/drive/v3";
 import { nextGetServerSession } from "@/lib/authOption";
 import { hash } from "bcrypt";
-import { userFullPayload } from "../relationsip";
+import { FileFullPayload, userFullPayload } from "../relationsip";
 import { GaxiosResponse } from "googleapis-common";
-import { drive_v3 } from "googleapis/build/src/apis/drive/v3";
+
+const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID
+const credentials = {
+  type: process.env.GOOGLE_ACCOUNT_TYPE,
+  project_id: process.env.GOOGLE_PROJECT_ID,
+  private_key_id: process.env.GOOGLE_PRIVATE_KEY_ID,
+  private_key: process.env.GOOGLE_PRIVATE_KEY,
+  client_email: process.env.GOOGLE_CLIENT_EMAIL,
+  client_id: process.env.GOOGLE_CLIENT_ID_DRIVE,
+  auth_uri: process.env.GOOGLE_AUTH_URI,
+  token_uri: process.env.GOOGLE_TOKEN_URI,
+  auth_provider_x509_cert_url: process.env.GOOGLE_AUTH_PROVIDER_X509_CERT_URL,
+  client_x509_cert_url: process.env.GOOGLE_CLIENT_X509_CERT_URL,
+} as any;
+const auth = new google.auth.GoogleAuth({
+  projectId: process.env.GOOGLE_PROJECT_ID,
+  universeDomain: process.env.GOOGLE_UNIVERSE_DOMAIN,
+  credentials,
+  scopes: ["https://www.googleapis.com/auth/drive.file"],
+});
+const drive: drive_v3.Drive = google.drive({ version: "v3", auth });
 
 export const UpdateUserById = async (data: FormData) => {
   try {
@@ -145,6 +168,10 @@ export const updateUploadFileByLink = async ( data: FormData) => {
   try {
     const name = data.get("name") as string;
     const type = data.get("type") as string;
+    const Genre=data.get("Genre") ;
+    if(!Genre){
+      throw new Error("eror");
+    }
     const size = 0;
     const url = data.get("url") as string;
     const userId = data.get("userId") as string;
@@ -155,6 +182,7 @@ export const updateUploadFileByLink = async ( data: FormData) => {
         mimetype: type,
         size: size,
         path: url,
+        genre: Genre as string,
         userId: userId,
         status: "PENDING",
         userRole: role,
@@ -170,13 +198,61 @@ export const updateUploadFileByLink = async ( data: FormData) => {
   }
 }
 
-export const UpdateUserByIdInAdmin = async (id: string, data: FormData) => {
+export const UpdateGenreByIdInAdmin = async (userData:userFullPayload , id: string, data: FormData) => {
   try {
     const session = await nextGetServerSession();
     if (!session?.user) {
       return { status: 401, message: "Auth Required" };
     }
-    if (session?.user.role !== "ADMIN") {
+    if (userData?.role !== "ADMIN") {
+      return { status: 401, message: "Unauthorize" };
+    }
+    const Genre = data.get("Genre") as string;
+
+    const findEmail = await prisma.genre.findFirst({
+      where: { Genre },
+    });
+
+    if (!findEmail && id == null) {
+      const create = await prisma.genre.create({
+        data: {
+          Genre
+        },
+      });
+      if (!create) throw new Error("Failed to create admin!");
+      revalidatePath("/admin");
+      return { status: 200, message: "Create Success!" };
+    } else if (id) {
+      const findUser = await prisma.genre.findUnique({
+        where: { id },
+      });
+      if (findUser) {
+        const update = await prisma.genre.update({
+          where: { id: id ?? findUser?.id },
+          data: {
+            Genre
+          },
+        });
+        console.log(update);
+        if (!update) throw new Error("Failed to update admin!");
+        revalidatePath("/admin");
+        return { status: 200, message: "Update Success!" };
+      } else throw new Error("User not found!");
+    }
+    revalidatePath("/admin");
+    return { status: 200, message: "Update Success!" };
+  } catch (error) {
+    console.error("Error update user:", error);
+    throw new Error((error as Error).message);
+  }
+};
+export const UpdateUserByIdInAdmin = async (userData:userFullPayload ,id: string, data: FormData) => {
+  try {
+    const session = await nextGetServerSession();
+    if (!session?.user) {
+      return { status: 401, message: "Auth Required" };
+    }
+    if (userData?.role !== "ADMIN") {
       return { status: 401, message: "Unauthorize" };
     }
     const email = data.get("email") as string;
@@ -239,13 +315,13 @@ export const UpdateUserByIdInAdmin = async (id: string, data: FormData) => {
   }
 };
 
-export const UpdateAdminById = async (id: string, data: FormData) => {
+export const UpdateAdminById = async (id: string, data: FormData, userData: userFullPayload) => {
   try {
     const session = await nextGetServerSession();
     if (!session?.user) {
       return { status: 401, message: "Auth Required" };
     }
-    if (session?.user.role !== "ADMIN") {
+    if (userData?.role !== "ADMIN") {
       return { status: 401, message: "Unauthorize" };
     }
     const email = data.get("email") as string;
@@ -307,6 +383,30 @@ export const UpdateAdminById = async (id: string, data: FormData) => {
     throw new Error((error as Error).message);
   }
 };
+
+export const DeleteGenre = async (id: string, userData:userFullPayload) => {
+  try {
+    const session = await nextGetServerSession();
+    if (!session?.user) {
+      return { status: 401, message: "Auth Required" };
+    }
+    if (userData.role === "SISWA") {
+      return { status: 401, message: "Unauthorize" };
+    }
+    const del = await prisma.genre.delete({
+      where: { id },
+    });
+    if (!del) {
+      return { status: 400, message: "Failed to delete user!" };
+    }
+    revalidatePath("/admin/studentData");
+    revalidatePath("/admin");
+    return { status: 200, message: "Delete Success!" };
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    throw new Error((error as Error).message);
+  }
+}
 
 export const DeleteUser = async (id: string) => {
   try {
@@ -325,6 +425,39 @@ export const DeleteUser = async (id: string) => {
     }
     revalidatePath("/admin/studentData");
     revalidatePath("/admin");
+    return { status: 200, message: "Delete Success!" };
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    throw new Error((error as Error).message);
+  }
+};
+
+export const DeleteFile = async (id: string, file: FileFullPayload) => {
+  try {
+    const session = await nextGetServerSession();
+    if (!session?.user) {
+      return { status: 401, message: "Auth Required" };
+    }
+    const driveResponse = await drive.files.delete({
+      fileId: file.permisionId as string,
+    });
+    if(!driveResponse){
+      const del = await prisma.fileWork.delete({
+        where: { id },
+      });
+      if (!del) {
+        return { status: 400, message: "Failed to delete user!" };
+      }
+      revalidatePath("/AjukanKarya");
+      return { status: 200, message: "Delete Success!" };
+    }
+    const del = await prisma.fileWork.delete({
+      where: { id },
+    });
+    if (!del) {
+      return { status: 400, message: "Failed to delete user!" };
+    }
+    revalidatePath("/AjukanKarya");
     return { status: 200, message: "Delete Success!" };
   } catch (error) {
     console.error("Error deleting user:", error);
@@ -357,17 +490,24 @@ export const updateRole = async (id: string, data: FormData) => {
   }
 };
 
-export const createFile=async (file : File, driveResponse:GaxiosResponse<drive_v3.Schema$File>, user:userFullPayload)=>{
+export const createFile=async (file : File, driveResponse:GaxiosResponse<drive_v3.Schema$File>, user:userFullPayload, data:FormData, drive:drive_v3.Drive)=>{
   try{
+    const genre=data.get("Genre");
+    if(genre === "undefined"){
+      await drive.files.delete({ fileId: driveResponse.data.id as string });
+      throw new Error("eror");
+    }
     const create=await prisma.fileWork.create({
       data: {
         filename: file.name,
         mimetype: file.type,
         size: file.size,
+        genre: genre as string,
         path: driveResponse.data.webViewLink || "",
         userId: user.id,
         status: "PENDING",
         userRole: user.role,
+        permisionId: driveResponse.data.id || "",
       }
     })
     if(!create){

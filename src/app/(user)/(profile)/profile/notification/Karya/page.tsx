@@ -42,7 +42,7 @@ export default async function page() {
     });
   }
   if (userData) {
-    if (session?.user?.email && !userData.title) return redirect("/pilihRole");
+    if (session?.user?.email && !userData.title && userData.role==="SISWA") return redirect("/pilihRole");
   }
   return <Home userData={userData as userFullPayload} file={file} />;
 }

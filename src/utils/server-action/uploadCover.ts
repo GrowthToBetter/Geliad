@@ -3,7 +3,7 @@
 import { nextGetServerSession } from "@/lib/authOption";
 import { UploadImageCloudinary, UploadImageCloudinaryFile } from "../uploadImage";
 import { revalidatePath } from "next/cache";
-import prisma from "@/lib/prisma";
+import prisma from "../../lib/prisma";
 
 export const InsertFileUpload = async (data: Record<string, any>) => {
   try {
@@ -50,7 +50,7 @@ export const UpdateCoverProfile = async (data: FormData) => {
     const ArrayBuffer = await cover.arrayBuffer();
     const upload = await UploadImageCloudinary(Buffer.from(ArrayBuffer));
     const update = await prisma.user.update({
-      where: { id: session.user.id as string },
+      where: { id: session?.user?.id as string },
       data: {
         cover: upload.data?.url as string,
       },

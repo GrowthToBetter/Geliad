@@ -3,7 +3,7 @@
 
 import Gambar from "@/../public/img/HomeImage.png";
 import Image from "next/image";
-import { FormButton } from "../../components/utils/Button";
+import { FormButton, LinkButton } from "../../components/utils/Button";
 import { Archivo_Black } from "next/font/google";
 const archivo_black = Archivo_Black({ weight: "400", subsets: ["latin"] });
 import IconSubject from "../../components/Icons/icon-Subject";
@@ -19,10 +19,20 @@ import Card from "../../components/utils/card";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
-export default function Home({userData, files}: {userData:userFullPayload , files:FileFullPayload[]}) {
+export default function Home({ userData }: { userData: userFullPayload }) {
   const { data: session, status } = useSession();
-  const router=useRouter();
-  const filteredFiles = files.filter((file) => file.status === "VERIFIED");
+  const [files, setFile] = useState<FileFullPayload[]>([]);
+  const { data, error } = useSWR(`/api/getFiles`, fetcher, {
+    refreshInterval: 1000,
+  });
+  useEffect(() => {
+    if (data) {
+      const { dataFile } = data;
+      setFile(dataFile);
+    }
+  }, [data]);
+  const router = useRouter();
+  const filteredFiles = files.filter((file) => file.status === "VERIFIED").slice(0,8);
   return (
     <div className="">
       <div className="bg-Primary min-w-max p-10 flex flex-col justify-center items-center relative">
@@ -32,7 +42,7 @@ export default function Home({userData, files}: {userData:userFullPayload , file
               Berjalan Bersama Menghasilkan Ribuan Karya
             </h1>
             <p className="md:w-[400px] w-[200px] pt-5 text-sm font-semibold">
-              G E L I A D Tempatmu Untuk Menciptakan Banyak Bakat Hebat <br />
+              GELIAD Tempatmu Untuk Menciptakan Banyak Bakat Hebat <br />
               Berjalan Bersama Untuk Generasi Hebat
             </p>
             <FormButton
@@ -44,46 +54,6 @@ export default function Home({userData, files}: {userData:userFullPayload , file
             </FormButton>
           </div>
           <Image src={Gambar} alt="Gambar" width={520} height={400} />
-          <form className=" md:min-w-full min-w-max absolute md:top-32 right-0 top-12" onSubmit={(e) => toast.error("Fitur ini sedang dalam tahap pengembangan")}>
-            <label
-              htmlFor="search"
-              className="mb-2 text-sm font-medium text-gray-900 sr-only"
-            >
-              Search
-            </label>
-            <div className="relative min-w-max">
-              <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                <svg
-                  className="w-4 h-4 text-gray-500 "
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                  />
-                </svg>
-              </div>
-              <input
-                type="search"
-                id="search"
-                className="block min-w-max md:min-w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Search"
-                required
-              />
-              <FormButton
-                type="submit"
-                className="text-white absolute end-2.5 bg-Secondary hover:bg-blue-400 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 "
-              >
-                Search
-              </FormButton>
-            </div>
-          </form>
         </div>
         <div className="h-[100px] w-full pt-10 bg-[#F5F8FA]">
           <ul className="flex justify-evenly font-semibold  ">
@@ -94,7 +64,7 @@ export default function Home({userData, files}: {userData:userFullPayload , file
               </Link>
             </li>
             <li>
-              <Link href={"/"} className="flex">
+              <Link href={"/ListKarya"} className="flex">
                 <Img />
                 List Karya
               </Link>
@@ -102,17 +72,48 @@ export default function Home({userData, files}: {userData:userFullPayload , file
           </ul>
         </div>
       </div>
-      <div className=" max-w-max bg-slate-500 flex-wrap flex justify-center items-center relative">
-          {filteredFiles.map((file, i) => (
-            <Card
-              LinktoVisit={file.path}
-              bgImage={ file?.coverFile ? file.coverFile :"https://www.shutterstock.com/image-vector/none-icon-thin-linear-outline-260nw-2139308813.jpg"}
-              nama={file.filename}
-              key={i}
-              className="m-5"
-              file={file}
+      <div className=" grid lg:grid-cols-4 grid-cols-1 gap-4 bg-white rounded-xl p-8 mt-4">
+        {filteredFiles.map((user, i) => (
+          <div
+            key={i}
+            id="container"
+            className="w-full h-fit bg-slate-50 rounded-3xl pb-6 border border-slate-200"
+          >
+            <Image
+              src={
+                user.coverFile
+                  ? (user.coverFile as string)
+                  : "https://res.cloudinary.com/dhjeoo1pm/image/upload/v1726727429/mdhydandphi4efwa7kte.png"
+              }
+              unoptimized
+              quality={100}
+              width={100}
+              height={100}
+              alt="banner"
+              className="w-full object-cover h-40 rounded-t-3xl"
             />
-          ))}
+            <div className="ml-2 mt-2">
+              <div className="flex justify-between p-2">
+                <p className="font-medium xl:text-[15px] lg:text-[14px] md:text-[13px] sm:text-[12px] text-[11px] text-black">
+                  {user.filename}
+                </p>
+              </div>
+                <p className="font-medium xl:text-[15px] lg:text-[14px] w-fit md:text-[13px] sm:text-[12px] text-[11px] text-black">
+                  views : {user.views}
+                </p>
+
+              <div className="mt-6 justify-start">
+                <LinkButton
+                  variant="white"
+                  href={`${user.path}`}
+                  className="bg-transparent border rounded-full"
+                >
+                  Profil
+                </LinkButton>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
       <div>
         <div className="justify-center flex bg-white pt-40 flex-col h-screen xl:flex-row items-center px-4">

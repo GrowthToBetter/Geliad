@@ -278,7 +278,7 @@ export default function UploadPage({
                             <div>
                               <LinkButton
                                 variant="base"
-                                href={`/profile/${file.user?.id}`}
+                                href={`/ListKarya/user/profile/${file.userId}`}
                                 className="w-full"
                               >
                                 <p className="mx-auto text-sm">Visit</p>

@@ -1,8 +1,10 @@
 import React from "react";
 import AdminHeaders from "./components/main/AdminHeaders";
-import { findAllUsers } from "@/utils/user.query";
+import { findAllUsers, findFiles } from "@/utils/user.query";
 import prisma from "@/lib/prisma";
 import TableUser from "./components/main/TableUser";
+import { nextGetServerSession } from "@/lib/authOption";
+import { userFullPayload } from "@/utils/relationsip";
 
 interface cardProps {
   title: string;
@@ -15,8 +17,8 @@ export default async function AdminPage() {
   const dataUser = await findAllUsers({
     AND: [{ NOT: { role: "ADMIN" } }, { NOT: { role: "GURU" } }],
   });
-  const dataGuru = await findAllUsers({
-    AND: [{ NOT: { role: "SISWA" } }, { NOT: { role: "ADMIN" } }],
+  const dataPaper = await findFiles({
+    AND: [{ NOT: { status: "DENIED" } }, { NOT: { status: "PENDING" } }],
   });
   const dataAdmin = await prisma.user.findMany({
     where: {
@@ -24,24 +26,39 @@ export default async function AdminPage() {
     },
     include: { userAuth: true },
   });
+  const dataSubmited = await findFiles({
+    AND: [{ NOT: { status: "DENIED" } }, { NOT: { status: "VERIFIED" } }],
+  })
 
   const CardItem: cardProps[] = [
     {
-      title: "Number of student",
+      title: "Number of user",
       data: dataUser.length,
-      desc: "Malang Telkom Vocational School Students",
+      desc: "user who allocated they paper",
     },
     {
       title: "Number of Mentor",
-      data: dataGuru.length,
-      desc: "Malang Telkom Vocational School Mentors",
+      data: dataPaper.length,
+      desc: "All Verified Paper",
     },
     {
-      title: "Number of Achievement",
-      data: "0",
+      title: "Number of works submitted",
+      data: dataSubmited.length,
       desc: "Malang Telkom Vocational School Achievements",
     },
   ];
+  const session = await nextGetServerSession();
+  const userData = await prisma.user.findFirst({
+    where: {
+      id: session?.user?.id,
+    },
+    include: {
+      userAuth: true,
+      File: { include: { TaskValidator: true } },
+      taskValidator: { include: { user: true } },
+      comment: { include: { file: true } },
+    },
+  });
   return (
     <div className="flex flex-col relative">
       <section className="w-full">
@@ -61,7 +78,7 @@ export default async function AdminPage() {
           </div>
         </section>
       </section>
-      <TableUser dataAdmin={dataAdmin} />
+      <TableUser userData={userData as userFullPayload} dataAdmin={dataAdmin} />
     </div>
   );
 }

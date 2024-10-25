@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 "use client";
 import { FormButton } from "@/app/components/utils/Button";
-import { DropDown, TextField } from "@/app/components/utils/Form";
+import { TextField } from "@/app/components/utils/Form";
 import ModalProfile from "@/app/components/utils/Modal";
 import { userFullPayload } from "@/utils/relationsip";
-import { UpdateAdminById } from "@/utils/server-action/userGetServerSession";
-import { Prisma, Role } from "@prisma/client";
+import { UpdateGenreByIdInAdmin, } from "@/utils/server-action/userGetServerSession";
+import { Prisma } from "@prisma/client";
 import React, { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import toast from "react-hot-toast";
 
-export default function ModalUser({ setIsOpenModal, data, userData }: { setIsOpenModal: Dispatch<SetStateAction<boolean>>; data?: Prisma.UserGetPayload<{}> | null; userData: userFullPayload }) {
+export default function ModalStudent({ setIsOpenModal, data, userData }: { setIsOpenModal: Dispatch<SetStateAction<boolean>>; data?: Prisma.GenreGetPayload<{}> | null ; userData: userFullPayload }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const HandleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
@@ -18,7 +18,7 @@ export default function ModalUser({ setIsOpenModal, data, userData }: { setIsOpe
     try {
       const toastId = toast.loading("Loading...");
       const formData = new FormData(e.target);
-      const update = await UpdateAdminById(data?.id as string, formData, userData);
+      const update = await UpdateGenreByIdInAdmin(userData, data?.id as string, formData);
       if (update) {
         toast.success(update.message as string, { id: toastId });
         setIsLoading(false);
@@ -32,23 +32,11 @@ export default function ModalUser({ setIsOpenModal, data, userData }: { setIsOpe
   };
 
   return (
-    <ModalProfile title="Data Admin" onClose={() => setIsOpenModal(false)}>
+    <ModalProfile title="Data User" onClose={() => setIsOpenModal(false)}>
       <form onSubmit={HandleSubmit}>
-        <TextField required type="text" label="Name" name="name" defaultValue={data?.name as string} placeholder="Nama Lengkap" />
-        <TextField required type="text" label="Email" name="email" defaultValue={data?.email as string} placeholder="Email" />
-        <TextField type="password" label="Password" name="password" disabled={data ? true : false} readOnly={data ? true : false} placeholder="Password" />
-        <DropDown
-          name="role"
-          defaultValue={data?.role}
-          label="Role"
-          options={Object.values(Role).map((x) => ({
-            label: x,
-            value: x,
-          }))}
-          required
-        />
+        <TextField required type="text" label="Category of Paper" name="Genre" defaultValue={data?.Genre as string} placeholder="Genre" />
         <div className="flex justify-end w-full gap-x-4 pb-4">
-          <FormButton onClick={() => setIsOpenModal(false)} variant="white">
+          <FormButton type="button" onClick={() => setIsOpenModal(false)} variant="white">
             Close
           </FormButton>
           <FormButton type="submit" variant="base">
@@ -75,5 +63,3 @@ export default function ModalUser({ setIsOpenModal, data, userData }: { setIsOpe
     </ModalProfile>
   );
 }
-
-

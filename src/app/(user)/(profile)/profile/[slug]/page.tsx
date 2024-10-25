@@ -34,7 +34,7 @@ export default function Page(props: { params: { slug: string } }) {
     setModal(!modal);
   };
   if(userData){
-    if(status==="authenticated" && !userData.title) return router.push("/pilihRole");
+    if(status==="authenticated" && !userData.title && userData.role==="SISWA") return router.push("/pilihRole");
   }
   return (
     <div className="bg-slate-100 p-5 md:p-10 lg:p-15 xl:p-20">

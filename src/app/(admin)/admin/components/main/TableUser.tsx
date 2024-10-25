@@ -6,8 +6,9 @@ import DataTable, { TableColumn } from "react-data-table-component";
 import toast from "react-hot-toast";
 import ModalUser from "./ModalUser";
 import AddUser from "./AddUser";
+import { userFullPayload } from "@/utils/relationsip";
 
-export default function TableUser({ dataAdmin }: { dataAdmin: Prisma.UserGetPayload<{ include: { userAuth: true } }>[] }) {
+export default function TableUser({ dataAdmin, userData }: { dataAdmin: Prisma.UserGetPayload<{ include: { userAuth: true } }>[]; userData: userFullPayload }) {
   const [modal, setModal] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   const [modalData, setModalData] = useState<Prisma.UserGetPayload<{}> | null>(null);
@@ -75,7 +76,7 @@ export default function TableUser({ dataAdmin }: { dataAdmin: Prisma.UserGetPayl
         <section className="max-w-[1440px] min-h-full mx-auto w-full bg-[#F6F6F6] p-4 outline outline-1 outline-slate-200">
           <div className="flex justify-between items-center">
             <h5 className="text-[40px] font-bold mx-5 text-Secondary">Admin</h5>
-            <AddUser />
+            <AddUser userData={userData} />
           </div>
           <div className="w-full border-b-2 border-black "></div>
           <div className="mt-6">
@@ -83,7 +84,7 @@ export default function TableUser({ dataAdmin }: { dataAdmin: Prisma.UserGetPayl
           </div>
         </section>
       </section>
-      {modal && <ModalUser setIsOpenModal={setModal} data={modalData} />}
+      {modal && <ModalUser userData={userData} setIsOpenModal={setModal} data={modalData} />}
     </>
   );
 }

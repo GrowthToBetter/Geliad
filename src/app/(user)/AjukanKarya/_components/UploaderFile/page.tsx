@@ -1,6 +1,8 @@
-import { useSession } from 'next-auth/react';
-import React, { useCallback, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
+import { DropDown } from "@/app/components/utils/Form";
+import { GenreFullPayload, userFullPayload } from "@/utils/relationsip";
+import { useSession } from "next-auth/react";
+import React, { ChangeEvent, useCallback, useState } from "react";
+import { useDropzone } from "react-dropzone";
 
 interface UploadedFile {
   id: string;
@@ -9,56 +11,88 @@ interface UploadedFile {
   size: number;
   path: string;
   userId: string;
-  status: 'PENDING' | 'VERIFIED' | 'DENIED';
+  status: "PENDING" | "VERIFIED" | "DENIED";
   createdAt?: Date;
 }
 
-const FileUploader: React.FC = () => {
+export default function FileUploader({
+  userData, genre
+}: {
+  userData: userFullPayload;
+  genre: GenreFullPayload[]
+}) {
   const { data: session } = useSession();
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedGenre, setSelectedGenre] = useState<{ [key: string]: string }>(
+    {}
+  );
   const [error, setError] = useState<string | null>(null);
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    if (!session?.user?.id) {
-      setError("User not authenticated");
-      return;
-    }
+  const onDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      if (!session?.user?.id) {
+        setError("User not authenticated");
+        return;
+      }
 
-    setIsLoading(true);
-    setError(null);
+      setIsLoading(true);
+      setError(null);
 
-    try {
-      const uploadResults = await Promise.all(
-        acceptedFiles.map(async (file) => {
-          const formData = new FormData();
-          formData.append('file', file);
+      try {
+        const uploadResults = await Promise.all(
+          acceptedFiles.map(async (file) => {
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("Genre", selectedGenre[userData.id] as string);
+            const response = await fetch(
+              `/api/upload?userId=${session?.user?.id}`,
+              {
+                method: "POST",
+                body: formData,
+              }
+            );
 
-          const response = await fetch(`/api/upload?userId=${session?.user?.id}`, {
-            method: 'POST',
-            body: formData,
-          });
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(
+                errorData.error || `Failed to upload ${file.name}`
+              );
+            }
+            return await response.json();
+          })
+        );
 
-          if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || `Failed to upload ${file.name}`);
-          }
-          return await response.json();
-        })
-      );
-
-      setUploadedFiles((prev) => [...prev, ...uploadResults]);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred while uploading files');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [session]);
+        setUploadedFiles((prev) => [...prev, ...uploadResults]);
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "An error occurred while uploading files"
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [selectedGenre, session?.user?.id, userData.id]
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
   });
+  const handleRoleChangeGenre = (userId: string, newClass: string) => {
+    setSelectedGenre((prev) => ({
+      ...prev,
+      [userId]: newClass,
+    }));
+  };
+  const filteredGenre:string[]=[];
+  for(const Genre of genre){
+    if(!filteredGenre.includes(Genre.Genre)){
+      filteredGenre.push(Genre.Genre)
+  }
 
+  }
   return (
     <div className="h-screen">
       <div
@@ -72,6 +106,19 @@ const FileUploader: React.FC = () => {
           <p>Drag {"'n'"} drop any files here, or click to select files</p>
         )}
       </div>
+      <DropDown
+        label="Genre"
+        options={filteredGenre.map((classes) => ({
+          label: classes,
+          value: classes,
+        }))}
+        className="rounded-xl flex justify-center items-center bg-moklet text-black p-3 m-3 font-bold"
+        name="Genre"
+        value={selectedGenre[userData?.id || ""] || undefined}
+        handleChange={(e: ChangeEvent<HTMLSelectElement>) =>
+          handleRoleChangeGenre(userData.id, e.target.value)
+        }
+      />
 
       {error && (
         <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
@@ -103,6 +150,4 @@ const FileUploader: React.FC = () => {
       </div>
     </div>
   );
-};
-
-export default FileUploader;
+}

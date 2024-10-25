@@ -1,36 +1,20 @@
 "use client";
-import { DeleteUser } from "@/utils/server-action/userGetServerSession";
-import { Prisma } from "@prisma/client";
+import { DeleteGenre } from "@/utils/server-action/userGetServerSession";
 import React, { useEffect, useState } from "react";
 import DataTable, { TableColumn } from "react-data-table-component";
 import toast from "react-hot-toast";
-import AddStudent from "./AddStudent";
-import ModalStudent from "./Modal";
-import { userFullPayload } from "@/utils/relationsip";
+import { GenreFullPayload, userFullPayload } from "@/utils/relationsip";
+import AddGenre from "./AddGenre";
+import ModalGenre from "./ModalGenre";
 
-export default function Table({ studentData, userData }: { studentData: Prisma.UserGetPayload<{ include: { userAuth: true } }>[]; userData: userFullPayload }) {
+export default function Table({ dataGenre, userData }: { userData: userFullPayload; dataGenre: GenreFullPayload[] }) {
   const [modal, setModal] = useState(false);
-  const [modalData, setModalData] = useState<Prisma.UserGetPayload<{ include: { userAuth: true } }> | null>(null);
+  const [modalData, setModalData] = useState<GenreFullPayload | null>(null);
   const [loader, setLoader] = useState(true);
-  const columns: TableColumn<Prisma.UserGetPayload<{ include: { userAuth: true } }>>[] = [
+  const columns: TableColumn<GenreFullPayload>[] = [
     {
-      name: "Name",
-      selector: (row) => row.name,
-      sortable: true,
-    },
-    {
-      name: "Email",
-      selector: (row) => row.email,
-      sortable: true,
-    },
-    {
-      name: "Role",
-      selector: (row) => row.role,
-      sortable: true,
-    },
-    {
-      name: "Last Login",
-      selector: (row) => (row.userAuth?.last_login ? row.userAuth?.last_login.toUTCString() : "Never"),
+      name: "Genre",
+      selector: (row) => row.Genre,
       sortable: true,
     },
     {
@@ -47,7 +31,7 @@ export default function Table({ studentData, userData }: { studentData: Prisma.U
       ),
     },
   ];
-  const EditUser = async (data: Prisma.UserGetPayload<{ include: { userAuth: true } }>) => {
+  const EditUser = async (data: GenreFullPayload) => {
     setModal(true);
     setModalData(data);
   };
@@ -55,7 +39,7 @@ export default function Table({ studentData, userData }: { studentData: Prisma.U
   const DeleteUserById = async (id: string) => {
     if (!confirm("Anda yakin ingin menghapus user ini?")) return;
     const toastId = toast.loading("Loading...");
-    const result = await DeleteUser(id);
+    const result = await DeleteGenre(id, userData);
     if (result) {
       toast.success(result.message, { id: toastId });
     }
@@ -70,13 +54,13 @@ export default function Table({ studentData, userData }: { studentData: Prisma.U
     <>
       <section className="min-w-[1440px] max-w-full min-h-full w-full bg-[#F6F6F6] p-4 outline outline-1 outline-slate-200 ml-6">
         <div className="flex justify-end items-center">
-          <AddStudent userData={userData}/>
+          <AddGenre dataGenre={dataGenre} userData={userData}/>
         </div>
         <div className="w-full border-b-2 border-black "></div>
         <div className="mt-6">
-          <DataTable data={studentData} columns={columns} />
+          <DataTable data={dataGenre} columns={columns} />
         </div>
-        {modal && <ModalStudent userData={userData} setIsOpenModal={setModal} data={modalData} />}
+        {modal && <ModalGenre userData={userData} setIsOpenModal={setModal} data={modalData} />}
       </section>
     </>
   );

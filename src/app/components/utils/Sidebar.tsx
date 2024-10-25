@@ -28,14 +28,9 @@ export default function Sidebar() {
       icon: <StudentDataIcon />,
     },
     {
-      title: "Task Data",
-      href: "/admin/taskData",
+      title: "Data Category",
+      href: "/admin/dataCategory",
       icon: <TeamDataIcon />,
-    },
-    {
-      title: "Acievement Data",
-      href: "/admin/achievementData",
-      icon: <AchievementIcon />,
     },
   ];
   const handleClick = () => {

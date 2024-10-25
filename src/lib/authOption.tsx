@@ -116,6 +116,8 @@ export const authOptions: AuthOptions = {
                 ? "ADMIN"
                 : user.email.includes("smktelkom-mlg")
                 ? "GURU"
+                : user.email === "dummysiswa5@gmail.com" 
+                ? "SISWA"
                 : null;
 
             if (!role) {

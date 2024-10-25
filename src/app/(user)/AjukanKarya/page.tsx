@@ -18,21 +18,11 @@ export default async function page() {
       comment: { include: { file: true } },
     },
   });
-  const files = await prisma.fileWork.findMany({
-    where:{
-      userId:session?.user?.id
-    },
-    include: {
-      user: { include: { userAuth: true } },
-      TaskValidator: true,
-      comment: { include: { user: true } },
-    },
-  });
+  const getGenre=await prisma.genre.findMany();
   if (userData) {
-    if (session?.user?.email && !userData.title) return redirect("/pilihRole");
+    if (session?.user?.email && !userData.title && userData?.role==="SISWA") return redirect("/pilihRole");
   }
 
   if (!session?.user?.email) return redirect("/signin");
-  console.log(files);
-  return <AjukanKarya userData={userData as userFullPayload} file={files} />;
+  return <AjukanKarya userData={userData as userFullPayload} genre={getGenre}/>;
 }

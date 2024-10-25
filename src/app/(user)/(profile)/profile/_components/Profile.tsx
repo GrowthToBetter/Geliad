@@ -57,19 +57,19 @@ export default function Profile({userData}:{userData:userFullPayload}) {
         <div className="relative z-10 flex flex-col items-start mt-44 sm:mt-48 md:mt-44 lg:mt-32 xl:mt-28">
           <div className="w-32 h-32 sm:w-24 md:w-32 flex place-items-center lg:w-36 xl:w-40 sm:h-24 md:h-32 lg:h-36 xl:h-40 rounded-full bg-gray-300 mb-4 overflow-hidden">
             <Image
-              src={userData.photo_profile as string}
+              src={(userData?.photo_profile as string ) || "https://res.cloudinary.com/dvwhepqbd/image/upload/v1720580914/pgfrhzaobzcajvugl584.png"}
               alt="Image Profile"
               width={180}
               height={180}
               className="mx-auto"
-            />
+              />
           </div>
           <div className="mt-4 flex w-full justify-between">
             <h1 className="text-2xl sm:text-2xl md:text-2xl lg:text-3xl xl:text-4xl font-normal">
               {userData?.name}
               {
                 `${
-                  userData.clasess ? `(${userData.clasess})` : " "
+                  userData?.clasess ? `(${userData.clasess})` : " "
                 }` as string
               }
             </h1>
@@ -108,8 +108,9 @@ export default function Profile({userData}:{userData:userFullPayload}) {
               disabled
               defaultValue={userData?.email as string}
             />
+            
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-3">
-              {userData.role === "SISWA" ? (<>
+              {userData?.role === "SISWA" ? (<>
               <TextField
                 type="text"
                 label="Absent"

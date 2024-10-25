@@ -18,15 +18,8 @@ export default async function page() {
       comment: { include: { file: true } },
     },
   });
-  const files = await prisma.fileWork.findMany({
-    include: {
-      user: { include: { userAuth: true } },
-      TaskValidator: true,
-      comment: { include: { user: true } },
-    },
-  });
   if (userData) {
-    if (session?.user?.email && !userData.title) return redirect("/pilihRole");
+    if (session?.user?.email && !userData.title && userData.role==="SISWA") return redirect("/pilihRole");
   }
-  return <Home userData={userData as userFullPayload} files={files} />;
+  return <Home userData={userData as userFullPayload}/>;
 }

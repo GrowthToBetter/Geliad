@@ -44,7 +44,8 @@ model fileWork {
   user          User?         @relation("file_id", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   path          String
   coverFile         String?
-  genre         String?
+  permisionId     String?
+  genre        String?
   Like          Int @default(0)
   views         Int @default(0)
   userRole      Role          @default(SISWA)
@@ -52,12 +53,18 @@ model fileWork {
   comment       comment[]     @relation("comment_file")
 }
 
+
 model comment {
   id     String     @id @default(uuid()) @map("comment_id") @db.Char(36)
   Text   String?
   userId String?
   user   User?      @relation("comment", fields: [userId], references: [id])
   file   fileWork[] @relation("comment_file")
+}
+
+model Genre {
+    id   String     @id @default(uuid()) @map("comment_id") @db.Char(36)
+    Genre    String?
 }
 
 enum Class {

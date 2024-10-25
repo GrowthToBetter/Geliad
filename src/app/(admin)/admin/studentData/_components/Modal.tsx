@@ -2,12 +2,13 @@
 import { FormButton } from "@/app/components/utils/Button";
 import { DropDown, TextField } from "@/app/components/utils/Form";
 import ModalProfile from "@/app/components/utils/Modal";
+import { userFullPayload } from "@/utils/relationsip";
 import { UpdateUserByIdInAdmin } from "@/utils/server-action/userGetServerSession";
 import { Prisma, Role } from "@prisma/client";
 import React, { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
 import toast from "react-hot-toast";
 
-export default function ModalStudent({ setIsOpenModal, data }: { setIsOpenModal: Dispatch<SetStateAction<boolean>>; data?: Prisma.UserGetPayload<{ include: { userAuth: true } }> | null }) {
+export default function ModalStudent({ setIsOpenModal, data, userData }: { setIsOpenModal: Dispatch<SetStateAction<boolean>>; data?: Prisma.UserGetPayload<{ include: { userAuth: true } }> | null ; userData: userFullPayload }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const HandleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
@@ -16,7 +17,7 @@ export default function ModalStudent({ setIsOpenModal, data }: { setIsOpenModal:
     try {
       const toastId = toast.loading("Loading...");
       const formData = new FormData(e.target);
-      const update = await UpdateUserByIdInAdmin(data?.id as string, formData);
+      const update = await UpdateUserByIdInAdmin(userData, data?.id as string, formData);
       if (update) {
         toast.success(update.message as string, { id: toastId });
         setIsLoading(false);
