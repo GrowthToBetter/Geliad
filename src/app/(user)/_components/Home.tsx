@@ -39,18 +39,18 @@ export default function Home({ userData }: { userData: userFullPayload }) {
         <div className="flex justify-center relative mt-14 md:m-0 flex-col md:flex-row items-center h-screen w-fit bg-Primary">
           <div className="w-full mt-20">
             <h1 className="text-3xl font-bold md:w-[400px] w-[200px]">
-              Berjalan Bersama Menghasilkan Ribuan Karya
+              Dari tugas menjadi karya
             </h1>
             <p className="md:w-[400px] w-[200px] pt-5 text-sm font-semibold">
-              GELIAD Tempatmu Untuk Menciptakan Banyak Bakat Hebat <br />
-              Berjalan Bersama Untuk Generasi Hebat
+              GELIAD bersama menghasilkan generasi hebat <br />
+              jadikan tugasmu menjadi sebuah karya
             </p>
             <FormButton
               onClick={() => router.push("/AjukanKarya")}
               className="mt-20 scale-125 ml-4"
               variant="base"
             >
-              Ajukan Sekarang
+              buat Sekarang
             </FormButton>
           </div>
           <Image src={Gambar} alt="Gambar" width={520} height={400} />

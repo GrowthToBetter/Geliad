@@ -36,7 +36,7 @@ export default function Navbar() {
               <h1 className="tracking-[1.5rem] text-2xl text-white font-bold">
                 GELIAD
                 <p className="text-center text-sm font-normal text-white tracking-widest">
-                  Berkolaborasi Meningkatkan Literasi
+                  Menciptakan generasi hebat, Dari tugas Jadi karya 
                 </p>
               </h1>
             </div>
