@@ -38,10 +38,10 @@ export default function Home({ userData }: { userData: userFullPayload }) {
       <div className="bg-Primary min-w-max p-10 flex flex-col justify-center items-center relative">
         <div className="flex justify-center relative mt-14 md:m-0 flex-col md:flex-row items-center h-screen w-fit bg-Primary">
           <div className="w-full mt-20">
-            <h1 className="text-3xl font-bold md:w-[400px] w-[200px]">
+            <h1 className="text-3xl font-bold md:w-[600px] w-[300px]">
               Dari tugas menjadi karya
             </h1>
-            <p className="md:w-[400px] w-[200px] pt-5 text-sm font-semibold">
+            <p className="md:w-[600px] w-[300px] pt-5 text-sm font-semibold">
               GELIAD bersama menghasilkan generasi hebat <br />
               jadikan tugasmu menjadi sebuah karya
             </p>
@@ -115,6 +115,7 @@ export default function Home({ userData }: { userData: userFullPayload }) {
           </div>
         ))}
       </div>
+      <LinkButton href={"/ListKarya"} className="m-5" variant="base">Lihat Lebih Banyak </LinkButton>
       <div>
         <div className="justify-center flex bg-white pt-40 flex-col h-screen xl:flex-row items-center px-4">
           <div className="max-w-max">
