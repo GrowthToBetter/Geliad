@@ -24,6 +24,7 @@ model User {
   taskValidator fileWork[] @relation("task_validator")
   Sugestion     String?
   ClassNumber   String?
+  SchoolOrigin  String?
   validatorId   String?
   generation    String?
   cover         String?
@@ -38,6 +39,7 @@ model fileWork {
   filename      String
   mimetype      String
   size          Int
+  userClasses   Class? 
   status        RequestStatus @default(PENDING)
   userId        String
   TaskValidator User[]        @relation("task_validator")
@@ -52,6 +54,7 @@ model fileWork {
   createdAt     DateTime      @default(now())
   comment       comment[]     @relation("comment_file")
 }
+
 
 model comment {
   id     String     @id @default(uuid()) @map("comment_id") @db.Char(36)

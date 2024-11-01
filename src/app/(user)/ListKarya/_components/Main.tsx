@@ -5,13 +5,14 @@ import Image from "next/image";
 import hipster from "@/../public/svg/hipsterP.png";
 import setting from "@/../public/svg/settingsP.png";
 import { FormButton, LinkButton } from "@/app/components/utils/Button";
-import { Prisma } from "@prisma/client";
+import { Class, Prisma } from "@prisma/client";
 import { Session } from "next-auth";
 import { FileFullPayload, GenreFullPayload } from "@/utils/relationsip";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { addLike, addViews } from "@/utils/server-action/userGetServerSession";
 import ModalProfile from "@/app/components/utils/Modal";
+import { TextField } from "@/app/components/utils/Form";
 
 export default function Main({
   ListData,
@@ -26,6 +27,7 @@ export default function Main({
 }) {
   const [searchInput, setSearchInput] = useState<string>("");
   const [selected, setSelected] = useState("All");
+  const [classes, setClasses]=useState<string|null>("All");
   const [filteredUser, setFilteredUser] = useState<FileFullPayload[]>(ListData);
 
   useEffect(() => {
@@ -34,15 +36,19 @@ export default function Main({
         userData.filename.toLowerCase().includes(searchInput.toLowerCase())
       );
       const finalFilteredUsers =
-        selected === "All"
-          ? filteredByName
-          : filteredByName.filter(
-              (dataList: FileFullPayload) => dataList.genre === selected
-            );
+      selected === "All" && classes === "All"
+        ? filteredByName
+        : selected === "All" ? filteredByName.filter(
+            (dataList: FileFullPayload) => dataList.userClasses === (classes as Class)
+          ) : classes === "All" ? filteredByName.filter(
+            (dataList: FileFullPayload) => dataList.genre === selected
+          ): filteredByName.filter(
+            (dataList: FileFullPayload) => dataList.genre === selected && dataList.userClasses === (classes as Class)
+          );
       setFilteredUser(finalFilteredUsers);
     };
     filterUsers();
-  }, [ListData, searchInput, selected]);
+  }, [ListData, classes, searchInput, selected]);
 
   const handleSearchInput = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value);
@@ -51,11 +57,17 @@ export default function Main({
   const handleButtonFilter = (data: string) => {
     setSelected(data);
   };
+  const handleButtonFilterClass = (data: string) => {
+    if (data === "All") {
+      setClasses(null); 
+    }
+    setClasses(data);
+  };
   console.log(filteredUser);
   const filteredGenre: string[] = [];
   for (const Genre of genre) {
-    if (!filteredGenre.includes(Genre.Genre as string)) {
-      filteredGenre.push(Genre.Genre as string);
+    if (!filteredGenre.includes(Genre.Genre)) {
+      filteredGenre.push(Genre.Genre);
     }
   }
   const addView = async (file: FileFullPayload) => {
@@ -91,6 +103,12 @@ export default function Main({
       throw new Error((error as Error).message);
     }
   };
+  if(!ListData) {
+    return (<> Loading...</>)}
+  if(!genre) {
+    return (<> Loading...</>)
+  }
+
   return (
     <section className="max-w-full mx-auto xl:mx-48 md:flex  gap-x-4 px-4 xl:px-0">
       <div className="block md:hidden mb-4">
@@ -137,9 +155,11 @@ export default function Main({
 
       <div className="lg:w-5/12">
         <div className="grid grid-cols-1 gap-4">
+          {
+            currentUser && session && (
           <div className="w-full bg-white rounded-3xl pb-6">
             <Image
-              src={currentUser?.cover ? currentUser.cover as string : "https://res.cloudinary.com/dhjeoo1pm/image/upload/v1726727429/mdhydandphi4efwa7kte.png"}
+              src={currentUser.cover as string}
               unoptimized
               quality={100}
               width={100}
@@ -165,34 +185,75 @@ export default function Main({
               </p>
             </div>
           </div>
+            )
+          }
           <div className="w-full px-10 bg-white rounded-3xl py-4">
             <div className="py-4 font-Quicksand xl:text-[20px] lg:text-[19px] md:text-[18px] sm:text-[17px] font-light text-slate-500">
-              Manage your partner
+              Manage your File
             </div>
-            <hr />
-            <div className="grid grid-cols-1">
-              <button
-                onClick={() => handleButtonFilter("All")}
-                className="flex gap-x-4 items-center py-2 hover:bg-slate-100 focus:ring-2 focus:ring-slate-500 rounded-xl mt-2 pl-2"
-              >
-                <Image src={setting} width={30} alt="hustler" />
-                <p className="xl:text-[20px] lg:text-[19px] md:text-[18px] sm:text-[17px] font-medium font-Quicksand text-slate-500">
-                  All
-                </p>
-              </button>
-              {filteredGenre.map((data) => (
+            <div className="flex flex-col">
+              <div className="grid grid-cols-1 m-10">
                 <button
-                  key={data}
-                  onClick={() => handleButtonFilter(data)}
+                  onClick={() => handleButtonFilterClass("All")}
                   className="flex gap-x-4 items-center py-2 hover:bg-slate-100 focus:ring-2 focus:ring-slate-500 rounded-xl mt-2 pl-2"
                 >
-                  <Image src={hipster} width={30} alt={data} />
+                  <Image src={setting} width={30} alt="hustler" />
                   <p className="xl:text-[20px] lg:text-[19px] md:text-[18px] sm:text-[17px] font-medium font-Quicksand text-slate-500">
-                    {data}
+                    All
                   </p>
                 </button>
-              ))}
+                <div className="flex">
+                <TextField
+                  type="radio"
+                  label="X"
+                  name="kelas"
+                  checked={classes === "X"}
+                  handleChange={() => handleButtonFilterClass("X")}
+                  className="flex gap-x-4 m-3 p-4 items-center py-2 hover:bg-slate-100 focus:ring-2 focus:ring-slate-500 rounded-xl mt-2 pl-2"
+                />
+                <TextField
+                  type="radio"
+                  label="XI"
+                  checked={classes === "XI"}
+                  name="kelas"
+                  handleChange={() => handleButtonFilterClass("XI")}
+                  className="flex gap-x-4 m-3 p-4 items-center py-2 hover:bg-slate-100 focus:ring-2 focus:ring-slate-500 rounded-xl mt-2 pl-2"
+                />
+                <TextField
+                  type="radio"
+                  label="XII"
+                  name="kelas"
+                  checked={classes === "XII"}
+                  handleChange={() => handleButtonFilterClass("XII")}
+                  className="flex gap-x-4 m-3 p-4 items-center py-2 hover:bg-slate-100 focus:ring-2 focus:ring-slate-500 rounded-xl mt-2 pl-2"
+                />
+                </div>
+              </div>
+              <div className="grid grid-cols-1">
+                <button
+                  onClick={() => handleButtonFilter("All")}
+                  className="flex gap-x-4 items-center py-2 hover:bg-slate-100 focus:ring-2 focus:ring-slate-500 rounded-xl mt-2 pl-2"
+                >
+                  <Image src={setting} width={30} alt="hustler" />
+                  <p className="xl:text-[20px] lg:text-[19px] md:text-[18px] sm:text-[17px] font-medium font-Quicksand text-slate-500">
+                    All
+                  </p>
+                </button>
+                {filteredGenre.map((data) => (
+                  <button
+                    key={data}
+                    onClick={() => handleButtonFilter(data)}
+                    className="flex gap-x-4 items-center py-2 hover:bg-slate-100 focus:ring-2 focus:ring-slate-500 rounded-xl mt-2 pl-2"
+                  >
+                    <Image src={hipster} width={30} alt={data} />
+                    <p className="xl:text-[20px] lg:text-[19px] md:text-[18px] sm:text-[17px] font-medium font-Quicksand text-slate-500">
+                      {data}
+                    </p>
+                  </button>
+                ))}
+              </div>
             </div>
+            <hr />
           </div>
         </div>
       </div>
@@ -295,7 +356,7 @@ export default function Main({
                           }}
                           className=" text-blue-500 hover:underline"
                         >
-                          Lihat File
+                          Baca
                         </FormButton>
                         <FormButton
                           variant="base"

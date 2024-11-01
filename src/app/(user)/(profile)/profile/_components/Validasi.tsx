@@ -35,10 +35,15 @@ export default function UploadPage({
   const [openProfiles, setOpenProfiles] = useState<{ [key: string]: boolean }>(
     {}
   );
+  const [searchInput, setSearchInput] = useState<string>("");
   const [openFile, setOpenFile] = useState<{ [key: string]: boolean }>({});
   const [modal, setModal] = useState(false);
   const pathName = usePathname();
   const router = useRouter();
+
+  const handleSearchInput = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value);
+  };
 
   const handleProf = (id: string) => {
     setOpenProfiles((prev) => ({
@@ -85,6 +90,12 @@ export default function UploadPage({
       : userData?.role === "VALIDATOR"
       ? file.filter((file) => file.userRole === "GURU")
       : file.filter((file) => file.userRole !== "DELETE");
+  const filteredByName =
+    file &&
+    file.filter((fileData: FileFullPayload) =>
+      fileData.filename.toLowerCase().includes(searchInput.toLowerCase())
+    );
+  const finalFilteredFile = searchInput === "" ? filteredFile : filteredByName;
   const handleSubmit = async (
     e: FormEvent<HTMLFormElement>,
     idFile: string,
@@ -133,7 +144,7 @@ export default function UploadPage({
   const addView = async (file: FileFullPayload) => {
     const loading = toast.loading("Loading...");
     try {
-      const update = await addViews(file.id, file.views+1);
+      const update = await addViews(file.id, file.views + 1);
       if (!update) {
         toast.error("Gagal Menambahkan Like");
       }
@@ -187,10 +198,94 @@ export default function UploadPage({
                 Validate Karya Sekarang
               </h1>
             </div>
+            <section className="max-w-full mx-auto xl:mx-48 md:flex  gap-x-4 px-4 xl:px-0">
+              <div className="block md:hidden mb-4">
+                <label
+                  htmlFor="default-search"
+                  className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
+                >
+                  Search
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 start-0 flex items-center ml-1 ps-3 pointer-events-none">
+                    <svg
+                      className="w-4 h-4 text-gray-500 dark:text-gray-400"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                      />
+                    </svg>
+                  </div>
+                  <input
+                    type="search"
+                    className="block w-full p-4 ps-10 text-sm text-gray-900 border rounded-full border-gray-100  bg-white focus:ring-red-100 focus:ring-2 outline-none focus:border-base"
+                    placeholder="Search Name or Job"
+                    value={searchInput}
+                    onChange={handleSearchInput}
+                    required
+                  />
+                  <button
+                    type="submit"
+                    className="absolute end-0 bottom-0 focus:outline-none text-white bg-base hover:bg-red-600 focus:ring-4 focus:ring-red-400 font-medium  text-sm px-5 py-2.5 me-2 mb-2 flex w-fit items-center rounded-full"
+                  >
+                    Search
+                  </button>
+                </div>
+              </div>
+            </section>
+            <div className="md:block hidden m-5">
+              <label
+                htmlFor="default-search"
+                className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
+              >
+                Search
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 start-0 flex items-center ml-1 ps-3 pointer-events-none">
+                  <svg
+                    className="w-4 h-4 text-gray-500 dark:text-gray-400"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                    />
+                  </svg>
+                </div>
+                <input
+                  type="search"
+                  className="block w-full p-4 ps-10 text-sm text-gray-900 border rounded-full border-gray-100  bg-white focus:ring-red-100 focus:ring-2 outline-none focus:border-base"
+                  placeholder="Search Name File"
+                  value={searchInput}
+                  onChange={handleSearchInput}
+                  required
+                />
+                <button
+                  type="submit"
+                  className="absolute end-0 bottom-0 focus:outline-none text-black hover:text-white bg-base hover:bg-red-600 focus:ring-4 focus:ring-red-400 font-medium  text-sm px-5 py-2.5 me-2 mb-2 flex w-fit items-center rounded-full"
+                >
+                  Search
+                </button>
+              </div>
+            </div>
             <div className="shadow-inner container p-10 w-[1300px] h-fit">
-              {filteredFile && filteredFile.length > 0 ? (
+              {finalFilteredFile && finalFilteredFile.length > 0 ? (
                 <>
-                  {filteredFile.map((file) => (
+                  {finalFilteredFile.map((file) => (
                     <div
                       key={file.id}
                       className="shadow-inner container flex justify-between p-10 w-full border-2 border-gray-300 rounded-lg relative mb-4"
@@ -217,7 +312,7 @@ export default function UploadPage({
                         delete
                       </FormButton>
                       <button
-                        onClick={() =>{
+                        onClick={() => {
                           file.mimetype.includes("msword") ||
                           file.mimetype.includes(
                             "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -225,8 +320,7 @@ export default function UploadPage({
                             ? handlefile(file.id)
                             : router.push(file.path);
                           addView(file);
-                        }
-                        }
+                        }}
                         className="ml-4 text-blue-500 hover:underline"
                       >
                         Lihat File
@@ -265,7 +359,10 @@ export default function UploadPage({
                             className="flex justify-center gap-x-2 py-2 px-4"
                           >
                             <Image
-                              src={file.user?.photo_profile as string}
+                              src={
+                                (file.user?.photo_profile as string) ??
+                                "https://res.cloudinary.com/dvwhepqbd/image/upload/v1720580914/pgfrhzaobzcajvugl584.png"
+                              }
                               alt="user image"
                               width={36}
                               height={36}

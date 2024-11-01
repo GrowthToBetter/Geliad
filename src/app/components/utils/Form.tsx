@@ -12,6 +12,7 @@ interface InputProps {
   handleChange?: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement >) => void;
   disabled?: boolean;
   readOnly?: boolean;
+  checked?: boolean;
   defaultValue?: string;
   onKeyDown?: KeyboardEventHandler<HTMLInputElement>;
 }
@@ -65,7 +66,7 @@ interface SelectFieldProps {
 //   },
 // ];
 
-export function TextField({ required, placeholder, type, name, label, className, value, handleChange, disabled, readOnly, defaultValue, onKeyDown }: Readonly<TextFieldProps>) {
+export function TextField({ required, placeholder, type, name, label, className, value, handleChange, disabled, readOnly, defaultValue, onKeyDown, checked }: Readonly<TextFieldProps>) {
   return (
     <main className={clsx("flex flex-col gap-y-2", className)}>
       {label && (
@@ -79,6 +80,7 @@ export function TextField({ required, placeholder, type, name, label, className,
         name={name}
         placeholder={placeholder}
         value={value}
+        checked={checked}
         onChange={handleChange}
         className={clsx("rounded-[8px] py-2.5 w-full mb-6 p-[10px] border border-slate-400", "placeholder:text-slate-600 placeholder:font-normal placeholder:tracking-wide", `${disabled && "bg-slate-100"}`)}
         required={required === true}

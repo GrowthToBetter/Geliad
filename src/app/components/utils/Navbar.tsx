@@ -7,6 +7,7 @@ import { FormButton, LinkButton } from "./Button";
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { signIn, signOut, useSession } from "next-auth/react";
+import ModalProfile from "./Modal";
 
 export default function Navbar() {
   const [modal, setModal] = useState<boolean>(false);
@@ -21,6 +22,7 @@ export default function Navbar() {
 
   const pathName = usePathname();
   const router = useRouter();
+  const [tutorial, setTutorial] = useState<boolean>(pathName === "/" ? true : false);
 
   const { data: session, status } = useSession();
   return (
@@ -41,7 +43,65 @@ export default function Navbar() {
               </h1>
             </div>
           </Link>
+          {tutorial && (
+            <ModalProfile
+              onClose={() => {
+                setTutorial(false);
+              }}
+              title="Panduan"
+            >
+              <div>
+                <ul>
+                  <li>1. Daftar Melalui Admin sekolah masing masing</li>
+                  <li>
+                    2. Apabila belum memiliki admin, bergabung sekarang bersama
+                    kami
+                  </li>
+                  <li>
+                    3. Setelah melakukan pendaftaran, login dengan akun yang
+                    didaftarkan
+                  </li>
+                  <li>4. update profile</li>
+                  <li>5. Ajukan Karya yang Diinginkan</li>
+                  <li>
+                    6. Proses Pengajuan dilakukan dengan menentukan jenis karya
+                    yang ingin diupload
+                  </li>
+                  <li>
+                    7. Apabila memilih Upload File, Pilih genre file terlebih
+                    dahulu, Lalu Baru pilih file yang akan diupload
+                  </li>
+                  <li>
+                    8. Setelah Upload Succes, tutup tab upload dan tambahkan
+                    cover
+                  </li>
+                  <li>
+                    9. Apabila Jenis file adalah link, isi sesuai format yang
+                    disediakan, setelah selesai tambahkan cover seperti diatas
+                  </li>
+                  <li>
+                    10. Tunggu Validator untuk memverifikasi karya yang telah
+                    diupload
+                  </li>
+                  <li>
+                    11. Lihat pada bagian notifikasi apabila terdapat komentar,
+                    atau melihat status terbaru dari karya
+                  </li>
+                  <li>12. Karya yang telah diverifikasi bisa dilihat pada List Karya yang diakses dari halaman Home atau Navbar Karya</li>
+                  <li>13. Karya Yang berupa word atau docs dapat dibaca On Page, sedangkan pdf atau Image akan ter- Redirect ke lokasi file disimpan</li>
+                </ul>
+              </div>
+            </ModalProfile>
+          )}
           <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+          <FormButton
+              variant="base"
+              onClick={() => {
+                setTutorial(true);
+              }}
+            >
+              Panduan
+            </FormButton>
             <div>
               {status === "unauthenticated" ? (
                 <button

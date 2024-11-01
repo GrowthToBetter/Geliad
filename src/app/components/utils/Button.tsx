@@ -23,7 +23,7 @@ export function LinkButton({ className, children, variant, withArrow, href, load
       <Link
         href={href}
         target={target}
-        className={`focus:outline-none text-white bg-base hover:bg-Secondary focus:ring-4 focus:ring-blue-400 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 ${className} flex w-fit items-center duration-300`}
+        className={`focus:outline-none text-black bg-base hover:bg-Secondary hover:text-white border-Secondary border-2 focus:ring-4 focus:ring-blue-400 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 ${className} flex w-fit items-center duration-300`}
       >
         {withArrow && (
           <svg width="12" className="mr-2" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">

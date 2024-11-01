@@ -88,8 +88,7 @@ export default function UploadPage({
               {filteredFile && filteredFile.length > 0 ? (
                 <>
                   {filteredFile.map((file) => (
-                    <>
-                    {file.comment.length > 0 && (
+                    file.comment.length > 0 && (
                     <div
                       key={file.id}
                       className="shadow-inner container flex justify-between p-10 w-full border-2 border-gray-300 rounded-lg relative mb-4"
@@ -176,8 +175,7 @@ export default function UploadPage({
                         )}
                       </>
                     </div>
-                      )}
-                      </>
+                      )
                   ))}
                 </>
               ) : (

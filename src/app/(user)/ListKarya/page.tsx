@@ -7,7 +7,7 @@ import { FileFullPayload } from "@/utils/relationsip";
 export default async function Partner() {
   const session = await nextGetServerSession();
   const getUser = await prisma.fileWork.findMany({
-    where: { AND: [{ NOT: { status: "DENIED" } }, { NOT: { status: "PENDING" } }, { NOT: { userId: session?.user?.id } }] },
+    where: { AND: [{ NOT: { status: "DENIED" } }, { NOT: { status: "PENDING" } }] },
   });
   const getCurrentUser = await prisma.user.findFirst({
     where: { id: session?.user?.id },

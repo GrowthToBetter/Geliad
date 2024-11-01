@@ -20,9 +20,9 @@ export default async function teamData() {
     },
   });
   return (
-    <>
+    <div className="flex flex-col">
       <AdminHeaders data="Data Category" />
       <Table userData={userData as userFullPayload} dataGenre={dataCategory} />
-    </>
+    </div>
   );
 }
