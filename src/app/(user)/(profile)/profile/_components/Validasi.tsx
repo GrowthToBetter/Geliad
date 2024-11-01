@@ -290,7 +290,7 @@ export default function UploadPage({
                       key={file.id}
                       className="shadow-inner container flex justify-between p-10 w-full border-2 border-gray-300 rounded-lg relative mb-4"
                     >
-                      <Link href={`${file.path}`}>
+                      <Link href={`${file.path}`} className="w-1/3">
                         {file.filename} <br />
                         <span
                           className={`${
