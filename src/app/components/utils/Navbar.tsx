@@ -257,6 +257,18 @@ export default function Navbar() {
                         List Karya
                       </Link>
                     </li>
+                    <li>
+                      <Link
+                        href="/pengembang"
+                        className={`${
+                          pathName === "/pengembang"
+                            ? "text-blue-400 border-2 border-highlight"
+                            : "text-black"
+                        } rounded-md hover:text-blue-600 hover:border-2 p-2 `}
+                      >
+                        Developers
+                      </Link>
+                    </li>
                     <li className="flex justify-center"></li>
                   </ul>
                   <div></div>
@@ -305,6 +317,18 @@ export default function Navbar() {
                   } rounded-md hover:text-black hover:bg-white duration-200 hover:border-2 p-2 `}
                 >
                   List Karya
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/pengembang"
+                  className={`${
+                    pathName === "/pengembang"
+                      ? "text-highlight border-2 bg-white border-highlight"
+                      : "text-white"
+                  } rounded-md hover:text-highlight hover:bg-white duration-200 hover:border-2 p-2 `}
+                >
+                  Developers
                 </Link>
               </li>
             </ul>
