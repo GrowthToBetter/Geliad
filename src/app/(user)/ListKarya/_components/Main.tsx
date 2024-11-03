@@ -159,7 +159,7 @@ export default function Main({
             currentUser && session && (
           <div className="w-full bg-white rounded-3xl pb-6">
             <Image
-              src={currentUser.cover as string}
+              src={currentUser.cover as string || "https://res.cloudinary.com/dhjeoo1pm/image/upload/v1726727429/mdhydandphi4efwa7kte.png"}
               unoptimized
               quality={100}
               width={100}
@@ -169,7 +169,7 @@ export default function Main({
             />
             <div className="rounded-full overflow-hidden -mt-8 relative w-[60px] h-[60px] ml-4">
               <Image
-                src={session?.user?.image as string}
+                src={session?.user?.image as string || "https://res.cloudinary.com/dvwhepqbd/image/upload/v1720580914/pgfrhzaobzcajvugl584.png"}
                 height={60}
                 width={60}
                 alt="image"
