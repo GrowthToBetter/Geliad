@@ -94,16 +94,31 @@ export default function UploadPage({
     }
   }
   const handleDelete = async (id: string, file: FileFullPayload) => {
+    const loadingToast = toast.loading("Deleting file...");
+    
     try {
-      const loading = toast.loading("Loading...");
-      const deleteExistingFile = await DeleteFile(id, file);
-      if (!deleteExistingFile) {
-        toast.error("error delete this file");
+      if (!id || !file) {
+        toast.error("Invalid file data", { id: loadingToast });
+        return;
       }
-      toast.success("Success", { id: loading });
-      return deleteExistingFile;
+  
+      const response = await DeleteFile(id, file);
+      
+      if (response.status !== 200) {
+        toast.error(response.message, { id: loadingToast });
+        return;
+      }
+  
+      toast.success("File deleted successfully", { id: loadingToast });
+      
+      // Optionally refresh the page or update UI
+      router.refresh();
+      
+      return response;
+  
     } catch (error) {
-      throw new Error((error as Error).message);
+      console.error("Delete handler error:", error);
+      toast.error(`Error: ${(error as Error).message}`, { id: loadingToast });
     }
   };
   if(!userData) {

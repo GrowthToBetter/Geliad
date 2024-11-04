@@ -12,6 +12,8 @@ import { nextGetServerSession } from "@/lib/authOption";
 import { hash } from "bcrypt";
 import { FileFullPayload, userFullPayload } from "../relationsip";
 import { GaxiosResponse } from "googleapis-common";
+import toast from "react-hot-toast";
+import router from "next/dist/client/router";
 
 const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID
 const credentials = {
@@ -441,32 +443,50 @@ export const DeleteFile = async (id: string, file: FileFullPayload) => {
     if (!session?.user) {
       return { status: 401, message: "Auth Required" };
     }
-    const driveResponse = await drive.files.delete({
-      fileId: file.permisionId as string,
-    });
-    if(!driveResponse){
+
+    // Check if file and permissionId exist
+    if (!file || !file.permisionId) {
       const del = await prisma.fileWork.delete({
         where: { id },
       });
+  
       if (!del) {
-        return { status: 400, message: "Failed to delete user!" };
+        return { status: 400, message: "Failed to delete from database!" };
       }
+  
       revalidatePath("/AjukanKarya");
       return { status: 200, message: "Delete Success!" };
     }
+
+    try {
+      await drive.files.delete({
+        fileId: file.permisionId,
+      });
+    } catch (driveError) {
+      console.error("Drive deletion error:", driveError);
+    }
+
     const del = await prisma.fileWork.delete({
       where: { id },
     });
+
     if (!del) {
-      return { status: 400, message: "Failed to delete user!" };
+      return { status: 400, message: "Failed to delete from database!" };
     }
+
     revalidatePath("/AjukanKarya");
     return { status: 200, message: "Delete Success!" };
+
   } catch (error) {
-    console.error("Error deleting user:", error);
-    throw new Error((error as Error).message);
+    console.error("Error in DeleteFile:", error);
+    return { 
+      status: 500, 
+      message: `Error deleting file: ${(error as Error).message}` 
+    };
   }
 };
+
+
 
 export const updateRole = async (id: string, data: FormData) => {
   try {
