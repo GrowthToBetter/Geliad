@@ -313,12 +313,16 @@ export default function UploadPage({
                       </FormButton>
                       <button
                         onClick={() => {
-                          file.mimetype.includes("msword") ||
-                          file.mimetype.includes(
-                            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                          )
-                            ? handlefile(file.id)
-                            : router.push(file.path);
+                          if (
+                            file.mimetype.includes("msword") ||
+                            file.mimetype.includes(
+                              "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                            )
+                          ) {
+                            handlefile(file.id);
+                          } else {
+                            router.push(file.path);
+                          }
                           addView(file);
                         }}
                         className="ml-4 text-blue-500 hover:underline"
@@ -360,7 +364,7 @@ export default function UploadPage({
                           >
                             <Image
                               src={
-                                (file.user?.photo_profile as string) ??
+                                (file.user?.photo_profile as string) ||
                                 "https://res.cloudinary.com/dvwhepqbd/image/upload/v1720580914/pgfrhzaobzcajvugl584.png"
                               }
                               alt="user image"
@@ -422,7 +426,7 @@ export default function UploadPage({
                                     handleSubmit(
                                       e,
                                       file.id,
-                                      userData?.id as string
+                                      (userData?.id as string) || ""
                                     )
                                   }
                                 >
