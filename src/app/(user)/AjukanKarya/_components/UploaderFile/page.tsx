@@ -4,6 +4,7 @@ import { Class } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import React, { ChangeEvent, useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import toast from "react-hot-toast";
 
 interface UploadedFile {
   id: string;
@@ -19,9 +20,11 @@ interface UploadedFile {
 export default function FileUploader({
   userData,
   genre,
+  onClose,
 }: {
   userData: userFullPayload;
   genre: GenreFullPayload[];
+  onClose: () => void;
 }) {
   const { data: session } = useSession();
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
@@ -36,7 +39,6 @@ export default function FileUploader({
   ) => {
     setSelectedClass(event.target.value);
   };
-
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
       if (!session?.user?.id) {
@@ -52,7 +54,15 @@ export default function FileUploader({
           acceptedFiles.map(async (file) => {
             const formData = new FormData();
             formData.append("file", file);
+            if (!selectedGenre[userData.id]) {
+              toast.error("Please select a genre");
+              throw new Error("Please select a genre");
+            }
             formData.append("Genre", selectedGenre[userData.id] as string);
+            if (!selectedClass) {
+              toast.error("Please select a class");
+              throw new Error("Please select a class");
+            }
             formData.append("kelas", selectedClass as string);
             const response = await fetch(
               `/api/upload?userId=${session?.user?.id}`,
@@ -68,11 +78,13 @@ export default function FileUploader({
                 errorData.error || `Failed to upload ${file.name}`
               );
             }
+            toast.success("File uploaded successfully");
             return await response.json();
           })
         );
 
         setUploadedFiles((prev) => [...prev, ...uploadResults]);
+        onClose();
       } catch (err) {
         setError(
           err instanceof Error

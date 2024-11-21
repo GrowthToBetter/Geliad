@@ -70,20 +70,19 @@ export default function Main({
       filteredGenre.push(Genre.Genre);
     }
   }
-  const addView = async (file: FileFullPayload) => {
-    const loading = toast.loading("Loading...");
-    try {
-      const update = await addViews(file.id, file.views + 1);
-      if (!update) {
-        toast.error("Gagal Menambahkan Like");
-      }
-      toast.success("Success", { id: loading });
-      return update;
-    } catch (error) {
-      throw new Error((error as Error).message);
-    }
+  const [openRead, setOpenRead] = useState<{
+    [key: string]: { isOpen: boolean; link: string };
+  }>({});
+
+  const handleRead = (id: string, link: string) => {
+    setOpenRead((prev) => ({
+      ...prev,
+      [id]: {
+        isOpen: !prev[id]?.isOpen,
+        link: prev[id]?.link || link,
+      },
+    }));
   };
-  const [openProfiles, setOpenProfiles] = useState<boolean>(false);
   const router = useRouter();
   const [like, setLike] = useState<boolean>(false);
   const addLikes = async (file: FileFullPayload) => {
@@ -342,19 +341,20 @@ export default function Main({
                         Profil
                       </LinkButton>
                       <div className="flex gap-x-4">
-                        <FormButton
+                      <FormButton
                           variant="base"
                           onClick={() => {
                             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-                            user.mimetype.includes("msword") ||
-                            user.mimetype.includes(
-                              "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                            )
-                              ? setOpenProfiles(true)
-                              : router.push(user.path);
-                            addView(user);
+                            if (
+                              user.path.includes("drive") ||  user.path.includes("Drive")
+                            ) {
+                              handleRead(user.id, user.permisionId as string);
+                            } else {
+                              router.push(user.path);
+                            }
+                            addViews(user.id, user.views + 1);
                           }}
-                          className=" text-blue-500 hover:underline"
+                          className=" hover:underline"
                         >
                           Baca
                         </FormButton>
@@ -369,15 +369,17 @@ export default function Main({
                         </FormButton>
                       </div>
                     </div>
-                    {openProfiles && (
+                    {openRead[user.id]?.isOpen && (
                       <ModalProfile
                         title={user.filename}
-                        onClose={() => setOpenProfiles(false)}
+                        onClose={() => handleRead(user.id, "")}
                         className="h-screen"
                       >
                         <iframe
                           className="w-full h-full"
-                          src={`${user.path}&output=embed`}
+                          src={`https://drive.google.com/file/d/${
+                            openRead[user.id]?.link
+                          }/preview`}
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                           sandbox="allow-scripts allow-modals allow-popups allow-presentation allow-same-origin"
                           allowFullScreen

@@ -35,13 +35,22 @@ export default function UploadPage({
   const [modal, setModal] = useState(false);
   const [cover, setCover] = useState<{ [key: string]: boolean }>({});
   const [file, setFile] = useState<FileFullPayload[]>([]);
-  const [openProfiles, setOpenProfiles] = useState<{ [key: string]: boolean }>(
-    {}
-  );
   const [selectedGenre, setSelectedGenre] = useState<{ [key: string]: string }>(
     {}
   );
   const [openUploadByLink, setOpenUploadByLink] = useState(false);
+  const [openRead, setOpenRead] = useState<{
+    [key: string]: { isOpen: boolean; link: string };
+  }>({});
+  const handleRead = (id: string, link: string) => {
+    setOpenRead((prev) => ({
+      ...prev,
+      [id]: {
+        isOpen: !prev[id]?.isOpen,
+        link: prev[id]?.link || link,
+      },
+    }));
+  };
   const router = useRouter();
   const { data, error } = useSWR(
     `/api/getFiles?fileId=${userData?.id}`,
@@ -56,14 +65,8 @@ export default function UploadPage({
       setFile(dataFile);
     }
   }, [data]);
-  const handleProf = (id: string) => {
-    setOpenProfiles((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
 
-  const handleSubmitLink = async (formData: FormData) => {
+  const handleSubmitLink = async (formData: FormData, onClose: () => void) => {
     try {
       const loading = toast.loading("Loading...");
       formData.set("userId", userData?.id as string);
@@ -75,6 +78,7 @@ export default function UploadPage({
           toast.error("error adding link");
         }
         toast.success("Success", { id: loading });
+        onClose();
         return update;
       }
     } catch (error) {
@@ -95,36 +99,35 @@ export default function UploadPage({
   }
   const handleDelete = async (id: string, file: FileFullPayload) => {
     const loadingToast = toast.loading("Deleting file...");
-    
+
     try {
       if (!id || !file) {
         toast.error("Invalid file data", { id: loadingToast });
         return;
       }
-  
+
       const response = await DeleteFile(id, file);
-      
+
       if (response.status !== 200) {
         toast.error(response.message, { id: loadingToast });
         return;
       }
-  
+
       toast.success("File deleted successfully", { id: loadingToast });
-      
-      // Optionally refresh the page or update UI
+
       router.refresh();
-      
+
       return response;
-  
     } catch (error) {
       console.error("Delete handler error:", error);
       toast.error(`Error: ${(error as Error).message}`, { id: loadingToast });
     }
   };
-  if(!userData) {
-    return (<> Loading...</>)}
-  if(!genre) {
-    return (<> Loading...</>)
+  if (!userData) {
+    return <> Loading...</>;
+  }
+  if (!genre) {
+    return <> Loading...</>;
   }
   return (
     <div className="pt-44">
@@ -160,7 +163,13 @@ export default function UploadPage({
                     setModal(false);
                   }}
                 >
-                  <FileUploader userData={userData} genre={genre} />
+                  <FileUploader
+                    onClose={() => {
+                      setModal(false);
+                    }}
+                    userData={userData}
+                    genre={genre}
+                  />
                 </ModalProfile>
               )}
               {openUploadByLink && (
@@ -174,7 +183,9 @@ export default function UploadPage({
                       e.preventDefault();
                       const formdata = new FormData(e.currentTarget);
 
-                      handleSubmitLink(formdata);
+                      handleSubmitLink(formdata, () => {
+                        setOpenUploadByLink(false);
+                      });
                     }}
                   >
                     <TextField
@@ -201,30 +212,30 @@ export default function UploadPage({
                     <div className="flex justify-between">
                       {Object.values(Class).map((classes) => (
                         <TextField
-                        key={classes}
-                        type="radio"
-                        name="kelas"
-                        value={`${classes}`}
-                        label={`Kelas ${classes}`}
-                      />
+                          key={classes}
+                          type="radio"
+                          name="kelas"
+                          value={`${classes}`}
+                          label={`Kelas ${classes}`}
+                        />
                       ))}
-                      
-                    <DropDown
-                      label="Genre"
-                      options={filteredGenre.map((classes) => ({
-                        label: classes,
-                        value: classes,
-                      }))}
-                      className="rounded-xl flex justify-center items-center bg-moklet text-black p-3 m-3 font-bold"
-                      name="Genre"
-                      value={selectedGenre[userData?.id || ""]}
-                      handleChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                        handleRoleChangeGenre(
-                          userData?.id || "",
-                          e.target.value
-                        )
-                      }
-                    />
+
+                      <DropDown
+                        label="Genre"
+                        options={filteredGenre.map((classes) => ({
+                          label: classes,
+                          value: classes,
+                        }))}
+                        className="rounded-xl flex justify-center items-center bg-moklet text-black p-3 m-3 font-bold"
+                        name="Genre"
+                        value={selectedGenre[userData?.id || ""]}
+                        handleChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                          handleRoleChangeGenre(
+                            userData?.id || "",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                     <FormButton type="submit" variant="base">
                       Submit
@@ -241,10 +252,10 @@ export default function UploadPage({
                       key={file.id}
                       className="shadow-inner container flex justify-between p-10 w-full border-2 border-gray-300 rounded-lg relative mb-4"
                     >
-                      <Link href={`${file.path}`}>
+                      <p className="w-1/3">
                         {file.filename} <br />
                         <span
-                          className={`${
+                          className={` ${
                             file.status === "PENDING"
                               ? "text-yellow-500"
                               : file.status === "DENIED"
@@ -254,20 +265,27 @@ export default function UploadPage({
                         >
                           {file.status}
                         </span>
-                      </Link>
-                      <button
-                        onClick={() =>
-                          file.mimetype.includes("msword") ||
-                          file.mimetype.includes(
-                            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                          )
-                            ? handleProf(file.id)
-                            : router.push(file.path)
-                        }
-                        className="ml-4 text-blue-500 hover:underline"
+                      </p>
+                      <FormButton
+                        variant="base"
+                        onClick={() => {
+                          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                          if (
+                            file.mimetype.includes("msword") ||
+                            file.mimetype.includes(
+                              "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                            ) ||
+                            file.mimetype.includes("pdf")
+                          ) {
+                            handleRead(file.id, file.permisionId as string);
+                          } else {
+                            router.push(file.path);
+                          }
+                        }}
+                        className=" hover:underline"
                       >
-                        Lihat File
-                      </button>
+                        Baca
+                      </FormButton>
                       <FormButton
                         type="button"
                         variant="base"
@@ -290,31 +308,23 @@ export default function UploadPage({
                           setIsOpenModal={setCover}
                         />
                       )}
-
-                      <>
-                        {openProfiles[file.id] && (
-                          <ModalProfile
-                            title={file.filename}
-                            onClose={() =>
-                              setOpenProfiles({
-                                ...openProfiles,
-                                [file.id]: false,
-                              })
-                            }
-                            className="h-screen"
-                          >
-                            <iframe
-                              className="w-full h-full"
-                              src={`${file.path}&output=embed`}
-                              frameBorder="9"
-                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                              contentEditable
-                              sandbox="allow-scripts allow-modals allow-popups allow-presentation allow-same-origin"
-                              allowFullScreen
-                            ></iframe>
-                          </ModalProfile>
-                        )}
-                      </>
+                      {openRead[file.id]?.isOpen && (
+                        <ModalProfile
+                          title={file.filename}
+                          onClose={() => handleRead(file.id, "")}
+                          className="h-screen"
+                        >
+                          <iframe
+                            className="w-full h-full"
+                            src={`https://drive.google.com/file/d/${
+                              openRead[file.id]?.link
+                            }/preview`}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            sandbox="allow-scripts allow-modals allow-popups allow-presentation allow-same-origin"
+                            allowFullScreen
+                          ></iframe>
+                        </ModalProfile>
+                      )}
                     </div>
                   ))}
                 </>

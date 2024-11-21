@@ -526,15 +526,16 @@ export const createFile = async (
       await drive.files.delete({ fileId: driveResponse.data.id as string });
       throw new Error("eror");
     }
-    const fileName=`${user?.name}_${file.name}_${user?.SchoolOrigin}`
-    const classes= data.get("kelas") as Class;
+    const fileName = `${user?.name}_${file.name}_${user?.SchoolOrigin}`;
+    const classes = data.get("kelas") as Class;
+    const type= file.type.includes("application/vnd.openxmlformats-officedocument.wordprocessingml.document") ? file.type : "application/pdf";
     const create = await prisma.fileWork.create({
       data: {
         filename: fileName,
-        mimetype: file.type,
+        mimetype: type,
         size: file.size,
         genre: genre as string,
-        userClasses:classes as Class,
+        userClasses: classes as Class,
         path: driveResponse.data.webViewLink || "",
         userId: user.id,
         status: "PENDING",

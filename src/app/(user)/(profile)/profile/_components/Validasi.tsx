@@ -36,23 +36,28 @@ export default function UploadPage({
     {}
   );
   const [searchInput, setSearchInput] = useState<string>("");
-  const [openFile, setOpenFile] = useState<{ [key: string]: boolean }>({});
   const [modal, setModal] = useState(false);
   const pathName = usePathname();
   const router = useRouter();
+  const [openRead, setOpenRead] = useState<{
+    [key: string]: { isOpen: boolean; link: string };
+  }>({});
 
+  const handleRead = (id: string, link: string) => {
+    setOpenRead((prev) => ({
+      ...prev,
+      [id]: {
+        isOpen: !prev[id]?.isOpen,
+        link: prev[id]?.link || link,
+      },
+    }));
+  };
   const handleSearchInput = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value);
   };
 
   const handleProf = (id: string) => {
     setOpenProfiles((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
-  const handlefile = (id: string) => {
-    setOpenFile((prev) => ({
       ...prev,
       [id]: !prev[id],
     }));
@@ -311,48 +316,40 @@ export default function UploadPage({
                       >
                         delete
                       </FormButton>
-                      <button
+                      <FormButton
+                        variant="base"
                         onClick={() => {
+                          // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                           if (
-                            file.mimetype.includes("msword") ||
-                            file.mimetype.includes(
-                              "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                            )
+                            file.path.includes("drive") ||  file.path.includes("Drive")
                           ) {
-                            handlefile(file.id);
+                            handleRead(file.id, file.permisionId as string);
                           } else {
                             router.push(file.path);
                           }
-                          addView(file);
+                          addViews(file.id, file.views + 1);
                         }}
-                        className="ml-4 text-blue-500 hover:underline"
+                        className=" hover:underline"
                       >
-                        Lihat File
-                      </button>
-                      <>
-                        {openFile[file.id] && (
-                          <ModalProfile
-                            title={file.filename}
-                            onClose={() =>
-                              setOpenFile({
-                                ...openFile,
-                                [file.id]: false,
-                              })
-                            }
-                            className="h-screen"
-                          >
-                            <iframe
-                              className="w-full h-full"
-                              src={`${file.path}&output=embed`}
-                              frameBorder="9"
-                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                              contentEditable
-                              sandbox="allow-scripts allow-modals allow-popups allow-presentation allow-same-origin"
-                              allowFullScreen
-                            ></iframe>
-                          </ModalProfile>
-                        )}
-                      </>
+                        Baca
+                      </FormButton>
+                      {openRead[file.id]?.isOpen && (
+                        <ModalProfile
+                          title={file.filename}
+                          onClose={() => handleRead(file.id, "")}
+                          className="h-screen"
+                        >
+                          <iframe
+                            className="w-full h-full"
+                            src={`https://drive.google.com/file/d/${
+                              openRead[file.id]?.link
+                            }/preview`}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            sandbox="allow-scripts allow-modals allow-popups allow-presentation allow-same-origin"
+                            allowFullScreen
+                          ></iframe>
+                        </ModalProfile>
+                      )}
                       <div className="relative">
                         <>
                           <FormButton
