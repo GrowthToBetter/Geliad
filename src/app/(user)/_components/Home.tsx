@@ -32,12 +32,14 @@ export default function Home({ userData }: { userData: userFullPayload }) {
     }
   }, [data]);
   const router = useRouter();
-  const filteredFiles = files.filter((file) => file.status === "VERIFIED").slice(0,8);
+  const filteredFiles = files
+    .filter((file) => file.status === "VERIFIED")
+    .slice(0, 8);
   return (
     <div className="">
       <div className="bg-Primary min-w-max p-10 flex flex-col justify-center items-center relative">
-        <div className="flex justify-center relative mt-14 md:m-0 flex-col md:flex-row items-center h-screen w-fit bg-Primary">
-          <div className="w-full mt-20">
+        {/* <div className="flex justify-center relative mt-14 md:m-0 flex-col md:flex-row items-center h-screen w-fit bg-Primary">
+          <div className="w-full mt-20 ">
             <h1 className="text-3xl font-bold md:w-[600px] w-[300px]">
               Dari tugas menjadi karya
             </h1>
@@ -53,8 +55,35 @@ export default function Home({ userData }: { userData: userFullPayload }) {
               buat Sekarang
             </FormButton>
           </div>
-          <Image src={Gambar} alt="Gambar" width={520} height={400} />
+          <Image src={Gambar} className="w-full absolute mix-blend-multiply" alt="Gambar" width={520} height={400} />
+        </div> */}
+        <div
+          className={`flex justify-center relative mt-14 md:m-0 flex-col md:flex-row items-center h-screen min-w-fit`}
+        >
+          <div className="w-full mt-20 z-10 relative p-5 bg-white bg-opacity-55 rounded-lg">
+            <h1 className="md:text-6xl text-4xl font-bold md:w-[800px] w-[500px]">
+            Dari tugas menjadi karyaBerjalan Bersama Menghasilkan Ribuan Karya
+            </h1>
+            <p className="md:w-[800px] w-[500px] pt-5 md:text-base text-sm font-semibold">
+            GELIAD bersama menghasilkan generasi hebat <br />
+            jadikan tugasmu menjadi sebuah karya
+            </p>
+            <FormButton
+              onClick={() => router.push("/AjukanKarya")}
+              className="mt-20 scale-125 ml-4"
+              variant="base"
+            >
+              Join Us
+            </FormButton>
+          </div>
         </div>
+        <Image
+          src={Gambar}
+          alt="Gambar"
+          width={1020}
+          height={700}
+          className="rounded-md w-screen h-screen object-cover mix-blend-lighten absolute z-0"
+        />
         <div className="h-[100px] w-full pt-10 bg-[#F5F8FA]">
           <ul className="flex justify-evenly font-semibold  ">
             <li>
@@ -98,9 +127,9 @@ export default function Home({ userData }: { userData: userFullPayload }) {
                   {user.filename}
                 </p>
               </div>
-                <p className="font-medium xl:text-[15px] lg:text-[14px] w-fit md:text-[13px] sm:text-[12px] text-[11px] text-black">
-                  views : {user.views}
-                </p>
+              <p className="font-medium xl:text-[15px] lg:text-[14px] w-fit md:text-[13px] sm:text-[12px] text-[11px] text-black">
+                views : {user.views}
+              </p>
 
               <div className="mt-6 justify-start">
                 <LinkButton
@@ -115,7 +144,9 @@ export default function Home({ userData }: { userData: userFullPayload }) {
           </div>
         ))}
       </div>
-      <LinkButton href={"/ListKarya"} className="m-5" variant="base">Lihat Lebih Banyak </LinkButton>
+      <LinkButton href={"/ListKarya"} className="m-5" variant="base">
+        Lihat Lebih Banyak{" "}
+      </LinkButton>
       <div>
         <div className="justify-center flex bg-white pt-40 flex-col h-screen xl:flex-row items-center px-4">
           <div className="max-w-max">

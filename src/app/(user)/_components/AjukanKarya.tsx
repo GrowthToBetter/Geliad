@@ -74,7 +74,7 @@ export default function UploadPage({
       for (const userId in selectedGenre) {
         formData.set("Genre", selectedGenre[userId]);
         const update = await updateUploadFileByLink(formData, userData);
-        if (!update) {
+        if (!update) {   
           toast.error("error adding link");
         }
         toast.success("Success", { id: loading });
