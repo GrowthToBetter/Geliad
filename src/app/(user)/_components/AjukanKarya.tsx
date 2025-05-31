@@ -67,21 +67,22 @@ export default function UploadPage({
   }, [data]);
 
   const handleSubmitLink = async (formData: FormData, onClose: () => void) => {
+    const loading = toast.loading("Loading...");
     try {
-      const loading = toast.loading("Loading...");
       formData.set("userId", userData?.id as string);
       formData.set("role", userData?.role as Role);
       for (const userId in selectedGenre) {
         formData.set("Genre", selectedGenre[userId]);
         const update = await updateUploadFileByLink(formData, userData);
-        if (!update) {   
-          toast.error("error adding link");
+        if (!update) {
+          toast.error("error adding link", { id: loading });
         }
         toast.success("Success", { id: loading });
         onClose();
         return update;
       }
     } catch (error) {
+      toast.error("error adding link", { id: loading });
       throw new Error((error as Error).message);
     }
   };
@@ -146,23 +147,20 @@ export default function UploadPage({
               <FormButton
                 type="button"
                 onClick={() => setModal(true)}
-                variant="base"
-              >
+                variant="base">
                 Here !
               </FormButton>
               <FormButton
                 type="button"
                 onClick={() => setOpenUploadByLink(true)}
-                variant="base"
-              >
+                variant="base">
                 Upload By Link
               </FormButton>
               {modal && (
                 <ModalProfile
                   onClose={() => {
                     setModal(false);
-                  }}
-                >
+                  }}>
                   <FileUploader
                     onClose={() => {
                       setModal(false);
@@ -176,8 +174,7 @@ export default function UploadPage({
                 <ModalProfile
                   onClose={() => {
                     setOpenUploadByLink(false);
-                  }}
-                >
+                  }}>
                   <form
                     onSubmit={(e) => {
                       e.preventDefault();
@@ -186,8 +183,7 @@ export default function UploadPage({
                       handleSubmitLink(formdata, () => {
                         setOpenUploadByLink(false);
                       });
-                    }}
-                  >
+                    }}>
                     <TextField
                       type="text"
                       name="name"
@@ -250,8 +246,7 @@ export default function UploadPage({
                   {file.map((file) => (
                     <div
                       key={file.id}
-                      className="shadow-inner container flex justify-between p-10 w-full border-2 border-gray-300 rounded-lg relative mb-4"
-                    >
+                      className="shadow-inner container flex justify-between p-10 w-full border-2 border-gray-300 rounded-lg relative mb-4">
                       <p className="w-1/3">
                         {file.filename} <br />
                         <span
@@ -261,8 +256,7 @@ export default function UploadPage({
                               : file.status === "DENIED"
                               ? "text-red-500"
                               : "text-green-500"
-                          }`}
-                        >
+                          }`}>
                           {file.status}
                         </span>
                       </p>
@@ -282,15 +276,13 @@ export default function UploadPage({
                             router.push(file.path);
                           }
                         }}
-                        className=" hover:underline"
-                      >
+                        className=" hover:underline">
                         Baca
                       </FormButton>
                       <FormButton
                         type="button"
                         variant="base"
-                        onClick={() => handleDelete(file.id, file)}
-                      >
+                        onClick={() => handleDelete(file.id, file)}>
                         Delete Paper
                       </FormButton>
                       <FormButton
@@ -298,8 +290,7 @@ export default function UploadPage({
                         variant="base"
                         onClick={() => {
                           setCover({ ...cover, [file.id]: true });
-                        }}
-                      >
+                        }}>
                         Edit Cover
                       </FormButton>
                       {cover[file.id] && (
@@ -312,8 +303,7 @@ export default function UploadPage({
                         <ModalProfile
                           title={file.filename}
                           onClose={() => handleRead(file.id, "")}
-                          className="h-screen"
-                        >
+                          className="h-screen">
                           <iframe
                             className="w-full h-full"
                             src={`https://drive.google.com/file/d/${
@@ -321,8 +311,7 @@ export default function UploadPage({
                             }/preview`}
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             sandbox="allow-scripts allow-modals allow-popups allow-presentation allow-same-origin"
-                            allowFullScreen
-                          ></iframe>
+                            allowFullScreen></iframe>
                         </ModalProfile>
                       )}
                     </div>
